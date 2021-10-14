@@ -68,14 +68,16 @@ class CreateProduct extends Command
 			Category::all(['id', 'name', 'parent_id'])->toArray()
 		);
 
-		$productCategoriesChoices = Category::all(['id'])->toArray();
+		$productCategoriesChoices = Category::all(['name'])->toArray();
 		if (count($productCategoriesChoices) === 0) {
 			$this->info('0 categories found.');
 			return Command::FAILURE;
 		}
+
+		$productCategoriesChoices = ['None', ...Arr::flatten($productCategoriesChoices)];
 		$choices = $this->choice(
-			'Select product categories(IDs), to use multiple categories use comma (1, 3, 55)...',
-			['None', ...Arr::flatten($productCategoriesChoices)],
+			'Select product categories, to use multiple categories use comma (Cat One, Cat Five)...',
+			$productCategoriesChoices,
 			0,
 			null,
 			true
@@ -95,13 +97,19 @@ class CreateProduct extends Command
 
 		foreach ($choices as $choice) {
 			if ($choice !== 'None') {
-				$productCategory = new ProductCategory();
-				$productCategory->product_id = $product->id;
-				$productCategory->category_id = intval($choice);
-				if (! $productCategory->save()) {
-					DB::rollBack();
-					$this->error('Unknown error occured while saving the categories.');
-					return Command::FAILURE;
+				$category = Category::where('name', $choice)->first();
+				if ($category) {
+					$productCategory = new ProductCategory();
+					$productCategory->product_id = $product->id;
+					$productCategory->category_id = $category->id;
+					if (! $productCategory->save()) {
+						DB::rollBack();
+						$this->error('Unknown error occured while saving the categories.');
+						return Command::FAILURE;
+					}
+				}
+				else {
+					$this->warn("Category {$choice} not found in the database.");
 				}
 			}
 		}
