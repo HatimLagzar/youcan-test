@@ -35,7 +35,7 @@ class CreateCategory extends Command
 	/**
 	 * Execute the create category console command.
 	 */
-	public function handle()
+	public function handle(): int
 	{
 		$name = filter_var($this->argument('name'), FILTER_SANITIZE_STRING);
 		$parentId = $this->argument('parentId');
