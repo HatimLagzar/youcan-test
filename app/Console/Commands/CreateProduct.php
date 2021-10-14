@@ -68,9 +68,14 @@ class CreateProduct extends Command
 			Category::all(['id', 'name', 'parent_id'])->toArray()
 		);
 
+		$productCategoriesChoices = Category::all(['id'])->toArray();
+		if (count($productCategoriesChoices) === 0) {
+			$this->info('0 categories found.');
+			return Command::FAILURE;
+		}
 		$choices = $this->choice(
 			'Select product categories(IDs), to use multiple categories use comma (1, 3, 55)...',
-			['None', ...Arr::flatten(Category::all(['id'])->toArray())],
+			['None', ...Arr::flatten($productCategoriesChoices)],
 			0,
 			null,
 			true
