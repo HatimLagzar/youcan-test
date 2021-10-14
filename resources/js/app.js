@@ -1,16 +1,25 @@
+require('./bootstrap');
 import { createApp } from 'vue'
 import App from './components/App.vue';
 import Nav from './components/Nav.vue';
 import CategoryFilter from './components/CategoryFilter.vue';
 import SortBy from './components/SortBy.vue';
 import AddProductBtn from './components/AddProductBtn.vue';
+import ProductsListBtn from './components/ProductsListBtn.vue';
+import ProductsList from './pages/Products/ProductsList.vue';
+import CreateProductPage from './pages/Products/Create.vue';
+import router from './router'
 
-const app = createApp({});
+const app = createApp(App)
+
 app.component('App', App)
-  .component('Nav', Nav)
-  .component('CategoryFilter', CategoryFilter)
-  .component('SortBy', SortBy)
-  .component('AddProductBtn', AddProductBtn)
-  .mount('#root');
+app.component('Nav', Nav)
+app.component('CategoryFilter', CategoryFilter)
+app.component('SortBy', SortBy)
+app.component('AddProductBtn', AddProductBtn)
+app.component('ProductsListBtn', ProductsListBtn)
+app.component('ProductsList', ProductsList)
+app.component('CreateProductPage', CreateProductPage)
 
-require('./bootstrap');
+app.use(router)
+app.mount('#root')

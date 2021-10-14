@@ -1,9 +1,9 @@
 <template>
 	<router-link
-		to="/create"
-		class="btn btn-primary"
+		to="/"
+		class="btn btn-secondary me-2"
 	>
-		Add Product
+		Products List
 	</router-link>
 </template>
 

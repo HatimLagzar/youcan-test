@@ -12,9 +12,7 @@
 </head>
 
 <body class="antialiased">
-	<div id="root">
-		<App />
-	</div>
+	<div id="root"></div>
 	<script src="{{ asset('js/app.js') }}"></script>
 </body>
 
