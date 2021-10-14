@@ -44,30 +44,26 @@ class DeleteCategory extends Command
 			Category::all('id', 'name', 'parent_id')->toArray()
 		);
 
-		$choices = Arr::flatten(Category::all('id')->toArray());
-		$categoryIdIndex = $this->choice('Select Category ID to be deleted', $choices);
-		$categoryId = $choices[$categoryIdIndex];
-		$category = Category::find($categoryId);
-		if ($category) {
-			if ($category->delete()) {
-				$this->info('Category deleted successfully.');
-				$this->table(
-					['id', 'name', 'parent id'],
-					Category::all(['id', 'name', 'parent_id'])->toArray()
-				);
-				return Command::SUCCESS;
-			}
-			else {
-				$this->error('Unknown error occured while deleting the category, please retry later.');
-				return Command::FAILURE;
-			}
+		$choices = Arr::flatten(Category::all('name')->toArray());
+		$categoryName = $this->choice('Select Category ID to be deleted', $choices);
+		$category = Category::where('name', $categoryName)->first();
+
+		if (! $category) {
+			$this->error('Category not found.');
+			return Command::FAILURE;
 		}
-		else {
+
+		$categoryId = $category->id;
+		if ($category->delete()) {
+			$this->info('Category deleted successfully.');
 			$this->table(
-				['id', 'name', 'parent id'],
+				['ID', 'Name', 'Parent'],
 				Category::all(['id', 'name', 'parent_id'])->toArray()
 			);
-			$this->error('Category not found.');
+			return Command::SUCCESS;
+		}
+		else {
+			$this->error('Unknown error occured while deleting the category, please retry later.');
 			return Command::FAILURE;
 		}
 	}
