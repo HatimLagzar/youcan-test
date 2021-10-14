@@ -1,5 +1,5 @@
 <template>
-  <button class="btn btn-primary">Add Product</button>
+  <a href="#" class="btn btn-primary btn-lg float-end">Add Product</a>
 </template>
 
 <script>
