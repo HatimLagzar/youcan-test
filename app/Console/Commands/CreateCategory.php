@@ -48,39 +48,30 @@ class CreateCategory extends Command
 			Category::all('id', 'name', 'parent_id')->toArray()
 		);
 
-		$choices = ['None', ...Arr::flatten(Category::all('id')->toArray())];
-		$parentIdIndex = $this->choice(
+		$choices = ['None', ...Arr::flatten(Category::all('name')->toArray())];
+		$parentCategoryName = $this->choice(
 			'Select Parent Category ID',
-			['None', ...Arr::flatten(Category::all('id')->toArray())],
+			$choices,
 			0
 		);
 
-		if ($parentIdIndex === 'None') {
-			$parentIdIndex = 0;
-		}
-
-		$parentId = $choices[$parentIdIndex];
-
-		if ($parentId && $parentId !== 'None') {
-			$parentId = intval($parentId);
-			$parentCategory = Category::find($parentId);
-			if (! $parentCategory) {
-				$this->table(
-					['id', 'name', 'parent id'],
-					Category::all(['id', 'name', 'parent_id'])->toArray()
-				);
-				$this->error('Incorrect parent id, category not found.');
-
-				return Command::FAILURE;
-			}
-		}
-		else {
+		if ($parentCategoryName === 'None') {
 			$parentId = null;
 		}
 
+		$parentCategory = Category::where('name', $parentCategoryName)->first();
+		if (! $parentCategory) {
+			$this->error('Parent category not found in the database.');
+			return Command::FAILURE;
+		}
+
+		if ($parentCategoryName !== 'None') {
+			$parentId = $parentCategory->id;
+		}
+
 		$category = Category::create([
-			'name' 				=> $name,
-			'parent_id' 	=> $parentId
+			'name' => $name,
+			'parent_id' => $parentId
 		]);
 
 		if ($category) {
