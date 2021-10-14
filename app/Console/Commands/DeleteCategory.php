@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Category;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 
 class DeleteCategory extends Command
 {
@@ -12,7 +13,7 @@ class DeleteCategory extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'category:delete {categoryId}';
+	protected $signature = 'category:delete';
 
 	/**
 	 * The console command description.
@@ -38,7 +39,14 @@ class DeleteCategory extends Command
 	 */
 	public function handle(): int
 	{
-		$categoryId = intval($this->argument('categoryId'));
+		$this->table(
+			['ID', 'Name', 'Parent'],
+			Category::all('id', 'name', 'parent_id')->toArray()
+		);
+
+		$choices = Arr::flatten(Category::all('id')->toArray());
+		$categoryIdIndex = $this->choice('Select Category ID to be deleted', $choices);
+		$categoryId = $choices[$categoryIdIndex];
 		$category = Category::find($categoryId);
 		if ($category) {
 			if ($category->delete()) {

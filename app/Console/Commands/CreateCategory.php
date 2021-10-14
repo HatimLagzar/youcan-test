@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Category;
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class CreateCategory extends Command
@@ -13,7 +14,7 @@ class CreateCategory extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'category:create {name} {parentId?}';
+	protected $signature = 'category:create';
 
 	/**
 	 * The console command description.
@@ -37,9 +38,30 @@ class CreateCategory extends Command
 	 */
 	public function handle(): int
 	{
-		$name = filter_var($this->argument('name'), FILTER_SANITIZE_STRING);
-		$parentId = $this->argument('parentId');
-		if ($parentId) {
+		$name = null;
+		while (! $name) {
+			$name = filter_var($this->ask('Enter Category Name'), FILTER_SANITIZE_STRING);
+		}
+
+		$this->table(
+			['ID', 'Name', 'Parent'],
+			Category::all('id', 'name', 'parent_id')->toArray()
+		);
+
+		$choices = ['None', ...Arr::flatten(Category::all('id')->toArray())];
+		$parentIdIndex = $this->choice(
+			'Select Parent Category ID',
+			['None', ...Arr::flatten(Category::all('id')->toArray())],
+			0
+		);
+
+		if ($parentIdIndex === 'None') {
+			$parentIdIndex = 0;
+		}
+
+		$parentId = $choices[$parentIdIndex];
+
+		if ($parentId && $parentId !== 'None') {
 			$parentId = intval($parentId);
 			$parentCategory = Category::find($parentId);
 			if (! $parentCategory) {
@@ -51,6 +73,9 @@ class CreateCategory extends Command
 
 				return Command::FAILURE;
 			}
+		}
+		else {
+			$parentId = null;
 		}
 
 		$category = Category::create([
