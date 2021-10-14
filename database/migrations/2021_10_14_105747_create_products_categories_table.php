@@ -20,11 +20,13 @@ class CreateProductsCategoriesTable extends Migration
 
 			$table->foreign('product_id')
 				->references('id')
-				->on('products');
+				->on('products')
+				->onDelete('CASCADE');
 
 			$table->foreign('category_id')
 				->references('id')
-				->on('categories');
+				->on('categories')
+				->onDelete('CASCADE');
 		});
 	}
 
