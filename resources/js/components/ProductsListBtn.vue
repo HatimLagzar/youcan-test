@@ -1,7 +1,7 @@
 <template>
 	<router-link
 		to="/"
-		class="btn btn-secondary me-2"
+		class="btn btn-light me-2"
 	>
 		Products List
 	</router-link>
