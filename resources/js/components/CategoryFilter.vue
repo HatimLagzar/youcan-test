@@ -24,7 +24,6 @@ export default {
 			return fetch('/api/categories')
 				.then(response => response.json())
 				.then(response => {
-					console.log(this)
 					this.categories = response.categories
 				})
 				.catch(error => console.log(error))

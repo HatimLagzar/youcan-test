@@ -9,6 +9,7 @@ import ProductsListBtn from './components/ProductsListBtn.vue';
 import ProductsList from './pages/Products/ProductsListPage.vue';
 import CreateProductPage from './pages/Products/CreateProductPage.vue';
 import router from './router'
+import ProductSummary from "./components/ProductSummary";
 
 const app = createApp(App)
 
@@ -20,6 +21,7 @@ app.component('AddProductBtn', AddProductBtn)
 app.component('ProductsListBtn', ProductsListBtn)
 app.component('ProductsList', ProductsList)
 app.component('CreateProductPage', CreateProductPage)
+app.component('ProductSummary', ProductSummary)
 
 app.use(router)
 app.mount('#root')
