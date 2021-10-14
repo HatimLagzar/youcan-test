@@ -29,7 +29,7 @@ class AddForeignKeyForCategoriesTable extends Migration
 	public function down()
 	{
 		Schema::table('categories', function (Blueprint $table) {
-			$table->dropForeign('parent_id');
+			$table->dropForeign('categories_parent_id_foreign');
 		});
 	}
 }
