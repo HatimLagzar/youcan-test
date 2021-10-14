@@ -21,4 +21,5 @@ Route::get('/categories', [CategoriesController::class, 'all']);
 Route::prefix('/products')
 	->group(function () {
 		Route::get('/', [ProductsController::class, 'all']);
+		Route::post('/', [ProductsController::class, 'store']);
 	});
