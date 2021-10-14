@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/categories', [CategoriesController::class, 'all']);
+
+Route::prefix('/products')
+	->group(function () {
+		Route::get('/', [CategoriesController::class, 'all']);
+	});
