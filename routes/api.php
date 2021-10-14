@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\CategoriesController;
+use App\Http\Controllers\Api\ProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,5 +20,5 @@ Route::get('/categories', [CategoriesController::class, 'all']);
 
 Route::prefix('/products')
 	->group(function () {
-		Route::get('/', [CategoriesController::class, 'all']);
+		Route::get('/', [ProductsController::class, 'all']);
 	});
