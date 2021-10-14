@@ -44,19 +44,24 @@ class DeleteProduct extends Command
 			Product::all(['id', 'name', 'price'])->toArray()
 		);
 
-		$choices = Arr::flatten(Product::all('id')->toArray());
+		$choices = Arr::flatten(Product::all('name')->toArray());
 		if (count($choices) === 0) {
 			$this->info('0 products found.');
 			return Command::FAILURE;
 		}
 
-		$productIdToBeDeleted = $this->choice(
+		$productNameToBeDeleted = $this->choice(
 			'Select the product that you want to delete',
 			$choices
 		);
-		$product = Product::find($productIdToBeDeleted);
-		if ($product) {
-			$product->delete();
+
+		$product = Product::where('name', $productNameToBeDeleted)->first();
+		if (!$product) {
+			$this->error('Product not found.');
+			return Command::FAILURE;
+		}
+
+		if ($product->delete()) {
 			$this->info('Product deleted successfully.');
 			return Command::SUCCESS;
 		}
