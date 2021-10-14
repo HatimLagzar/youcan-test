@@ -6,8 +6,8 @@ import CategoryFilter from './components/CategoryFilter.vue';
 import SortBy from './components/SortBy.vue';
 import AddProductBtn from './components/AddProductBtn.vue';
 import ProductsListBtn from './components/ProductsListBtn.vue';
-import ProductsList from './pages/Products/ProductsList.vue';
-import CreateProductPage from './pages/Products/Create.vue';
+import ProductsList from './pages/Products/ProductsListPage.vue';
+import CreateProductPage from './pages/Products/CreateProductPage.vue';
 import router from './router'
 
 const app = createApp(App)
