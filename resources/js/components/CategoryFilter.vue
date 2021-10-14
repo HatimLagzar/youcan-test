@@ -3,7 +3,7 @@
 		<label for="category">Category</label>
 		<select class="form-select w-auto d-inline-block ms-2 bg-transparent border-0" id="category">
 			<option value="">All</option>
-			<option v-for="category in categories" value="{{ category.id }}">{{ category.name }}</option>
+			<option v-for="category in categories" v-bind:value="category.id">{{ category.name }}</option>
 		</select>
 	</div>
 </template>
