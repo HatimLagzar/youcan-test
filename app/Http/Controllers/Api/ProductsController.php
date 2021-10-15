@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -26,6 +28,7 @@ class ProductsController extends Controller
 			'description' => 'string|required',
 			'price' => 'numeric|required',
 			'image' => 'image|max:10000|required',
+			'categories.*' => 'numeric|nullable'
 		]);
 
 		if ($validation->fails()) {
@@ -39,6 +42,7 @@ class ProductsController extends Controller
 		$description = filter_var($request->input('description'), FILTER_SANITIZE_STRING);
 		$price = filter_var($request->input('price'), FILTER_SANITIZE_NUMBER_FLOAT);
 		$price = floatval($price);
+		$categories = filter_var_array($request->input('categories'), FILTER_SANITIZE_NUMBER_INT);
 		$image = $request->file('image');
 
 		DB::beginTransaction();
@@ -57,6 +61,22 @@ class ProductsController extends Controller
 				'status' => 500,
 				'msg' => 'Unknown error occurred while saving the product.'
 			]);
+		}
+
+		foreach ($categories as $categoryId) {
+			$category = Category::find($categoryId);
+			if ($category) {
+				$productCategory = new ProductCategory();
+				$productCategory->product_id = $product->id;
+				$productCategory->category_id = $category->id;
+				if (! $productCategory->save()) {
+					DB::rollBack();
+					return response([
+						'status' => 500,
+						'msg' => 'Unknown error occurred while saving the categories.'
+					]);
+				}
+			}
 		}
 
 		DB::commit();
