@@ -3,6 +3,8 @@ import {reactive} from "vue";
 export default {
 	state: reactive({
 		products: [],
-		sortBy: 'NAME'
+		filteredProducts: [],
+		sortBy: 'NAME',
+		selectedCategory: ''
 	}),
 }

@@ -22,4 +22,9 @@ class Product extends Model
 	use HasFactory;
 
 	protected $table = 'products';
+
+	public function categories()
+	{
+		return $this->hasMany(ProductCategory::class, 'product_id', 'id');
+	}
 }
