@@ -1,4 +1,4 @@
-import {reactive} from "vue";
+import { reactive } from 'vue'
 
 export default {
 	state: reactive({
@@ -6,6 +6,6 @@ export default {
 		products: [],
 		filteredProducts: [],
 		sortBy: 'NAME',
-		selectedCategory: ''
+		selectedCategory: '',
 	}),
 }

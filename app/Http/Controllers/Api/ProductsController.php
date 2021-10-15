@@ -17,7 +17,7 @@ class ProductsController extends Controller
 		return response([
 			'status' => 200,
 			'msg' => 'Products pulled successfully.',
-			'products' => Product::with(['categories'])->get()
+			'products' => Product::with(['categories'])->paginate(3)
 		]);
 	}
 

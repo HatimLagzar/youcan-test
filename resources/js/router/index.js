@@ -1,6 +1,6 @@
-import {createRouter, createWebHashHistory} from 'vue-router'
-import ProductsList from "../pages/Products/ProductsListPage";
-import CreateProductPage from "../pages/Products/CreateProductPage";
+import { createRouter, createWebHashHistory } from 'vue-router'
+import ProductsList from '../pages/Products/ProductsListPage'
+import CreateProductPage from '../pages/Products/CreateProductPage'
 
 const routes = [
 	{ path: '/', component: ProductsList },
@@ -9,7 +9,7 @@ const routes = [
 
 const router = createRouter({
 	history: createWebHashHistory(),
-	routes
+	routes,
 })
 
 export default router
