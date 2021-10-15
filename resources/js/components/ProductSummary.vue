@@ -4,7 +4,11 @@
 			<div class="card-header">
 				<img
 					class="w-100 img-thumbnail"
-					v-bind:src="'storage/products/' + product.image_src"
+					v-bind:src="
+						isValidURL(product.image_src) 
+							? product.image_src 
+							: 'storage/products/' + product.image_src
+					"
 					v-bind:alt="product.name"
 				/>
 			</div>
@@ -21,5 +25,18 @@
 export default {
 	props: ['product'],
 	setup: () => ({}),
+	methods: {
+		isValidURL(string) {
+			let url;
+			
+			try {
+				url = new URL(string);
+			} catch (_) {
+				return false;  
+			}
+
+			return url.protocol === "http:" || url.protocol === "https:";
+		}
+	}
 }
 </script>
