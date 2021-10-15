@@ -42,7 +42,8 @@ class ProductsController extends Controller
         $description = filter_var($request->input('description'), FILTER_SANITIZE_STRING);
         $price = filter_var($request->input('price'), FILTER_SANITIZE_NUMBER_FLOAT);
         $price = floatval($price);
-        $categories = filter_var_array($request->input('categories'), FILTER_SANITIZE_NUMBER_INT);
+        $categories = $request->input('categories') ?? [];
+        $categories = filter_var_array($categories, FILTER_SANITIZE_NUMBER_INT);
         $image = $request->file('image');
 
         DB::beginTransaction();
