@@ -108,7 +108,7 @@ class CreateProduct extends Command
                         return Command::FAILURE;
                     }
                 }
-                else {
+                formNode
                     $this->warn("Category {$choice} not found in the database.");
                 }
             }

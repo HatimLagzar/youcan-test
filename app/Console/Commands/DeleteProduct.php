@@ -64,8 +64,7 @@ class DeleteProduct extends Command
         if ($product->delete()) {
             $this->info('Product deleted successfully.');
             return Command::SUCCESS;
-        }
-        else {
+        } else {
             $this->error('Unknown error occured while deleting the product.');
             return Command::FAILURE;
         }

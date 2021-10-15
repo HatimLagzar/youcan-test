@@ -81,8 +81,7 @@ class CreateCategory extends Command
             );
             $this->info('Category created successfully.');
             return Command::SUCCESS;
-        }
-        else {
+        } else {
             $this->error('Unknown error occured while creating the category, please retry later.');
             return Command::FAILURE;
         }

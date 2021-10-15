@@ -61,8 +61,7 @@ class DeleteCategory extends Command
                 Category::all(['id', 'name', 'parent_id'])->toArray()
             );
             return Command::SUCCESS;
-        }
-        else {
+        } else {
             $this->error('Unknown error occured while deleting the category, please retry later.');
             return Command::FAILURE;
         }
