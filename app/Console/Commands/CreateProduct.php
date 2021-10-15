@@ -107,8 +107,7 @@ class CreateProduct extends Command
                         $this->error('Unknown error occured while saving the categories.');
                         return Command::FAILURE;
                     }
-                }
-                formNode
+                } else {
                     $this->warn("Category {$choice} not found in the database.");
                 }
             }
