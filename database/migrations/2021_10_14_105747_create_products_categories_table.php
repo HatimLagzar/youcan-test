@@ -6,37 +6,37 @@ use Illuminate\Support\Facades\Schema;
 
 class CreateProductsCategoriesTable extends Migration
 {
-	/**
-	 * Run the migrations.
-	 *
-	 * @return void
-	 */
-	public function up()
-	{
-		Schema::create('products_categories', function (Blueprint $table) {
-			$table->id();
-			$table->unsignedBigInteger('product_id');
-			$table->unsignedBigInteger('category_id');
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('products_categories', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('category_id');
 
-			$table->foreign('product_id')
-				->references('id')
-				->on('products')
-				->onDelete('CASCADE');
+            $table->foreign('product_id')
+                ->references('id')
+                ->on('products')
+                ->onDelete('CASCADE');
 
-			$table->foreign('category_id')
-				->references('id')
-				->on('categories')
-				->onDelete('CASCADE');
-		});
-	}
+            $table->foreign('category_id')
+                ->references('id')
+                ->on('categories')
+                ->onDelete('CASCADE');
+        });
+    }
 
-	/**
-	 * Reverse the migrations.
-	 *
-	 * @return void
-	 */
-	public function down()
-	{
-		Schema::dropIfExists('products_categories');
-	}
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('products_categories');
+    }
 }

@@ -8,12 +8,12 @@ use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
 {
-	public function all()
-	{
-		return response([
-			'status' => 200,
-			'msg' => 'Categories pulled successfully.',
-			'categories' => Category::all()
-		]);
-	}
+    public function all()
+    {
+        return response([
+            'status' => 200,
+            'msg' => 'Categories pulled successfully.',
+            'categories' => Category::all()
+        ]);
+    }
 }

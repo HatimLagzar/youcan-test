@@ -17,16 +17,16 @@ use Illuminate\Support\Carbon;
  */
 class Category extends Model
 {
-	use HasFactory;
+    use HasFactory;
 
-	protected $table = 'categories';
-	protected $fillable = ['name', 'parent_id'];
+    protected $table = 'categories';
+    protected $fillable = ['name', 'parent_id'];
 
-	/**
-	 * Get the parent category
-	 */
-	public function parentCategory()
-	{
-		return $this->hasOne(Category::class, 'id', 'parent_id');
-	}
+    /**
+     * Get the parent category
+     */
+    public function parentCategory()
+    {
+        return $this->hasOne(Category::class, 'id', 'parent_id');
+    }
 }

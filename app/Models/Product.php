@@ -19,12 +19,12 @@ use Illuminate\Support\Carbon;
  */
 class Product extends Model
 {
-	use HasFactory;
+    use HasFactory;
 
-	protected $table = 'products';
+    protected $table = 'products';
 
-	public function categories()
-	{
-		return $this->hasMany(ProductCategory::class, 'product_id', 'id');
-	}
+    public function categories()
+    {
+        return $this->hasMany(ProductCategory::class, 'product_id', 'id');
+    }
 }
