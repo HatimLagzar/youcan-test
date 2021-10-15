@@ -8,7 +8,7 @@
     >
       <option value="">All</option>
       <option
-        v-for="category in categories"
+        v-for="category in getCategories"
         v-bind:key="category.id"
         v-bind:value="category.id"
         v-bind:selected="selectedCategory === category.id"
@@ -24,23 +24,25 @@ import store from "../store";
 
 export default {
   setup: () => ({}),
+  
   data: () => {
     return {
-      categories: [],
+      categories: store.state.categories,
       selectedCategory: store.state.selectedCategory,
     };
   },
+
   mounted() {
-    this.getCategories();
+    this.pullCategories();
   },
+
   methods: {
-    getCategories() {
-      return fetch("/api/categories")
-        .then((response) => response.json())
-        .then((response) => {
-          this.categories = response.categories;
-        })
-        .catch((error) => console.log(error));
+    pullCategories() {
+        const {fetchCategories} = require('./../api/categories')
+        fetchCategories()
+          .then((response) => {
+            store.state.categories = response.categories;
+          })
     },
 
     handleCategoryChange(e) {
@@ -61,9 +63,13 @@ export default {
       } else {
         store.state.filteredProducts = store.state.products;
       }
-
-      // store.state.products = store.state.products.filter()
     },
   },
+
+  computed: {
+		getCategories() {
+			return store.state.categories
+		}
+	}
 };
 </script>
