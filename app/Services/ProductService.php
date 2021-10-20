@@ -11,14 +11,17 @@ class ProductService
 {
     protected ProductRepository $productRepository;
     protected ProductCategoryRepository $productCategory;
+    protected CategoryService $categoryService;
 
     public function __construct(
         ProductRepository         $productRepository,
-        ProductCategoryRepository $productCategoryRepository
+        ProductCategoryRepository $productCategoryRepository,
+        CategoryService           $categoryService
     )
     {
         $this->productRepository = $productRepository;
         $this->productCategory = $productCategoryRepository;
+        $this->categoryService = $categoryService;
     }
 
     public function getAll(array $columns = [])
@@ -74,7 +77,9 @@ class ProductService
         $categories = filter_var_array($categories, FILTER_SANITIZE_NUMBER_INT);
         $image = $inputs['image'];
         $imageSrc = is_string($image) ? $image : $image->hashName();
-        $image->storeAs('public/products/', $imageSrc);
+        if (!is_string($image)) {
+            $image->storeAs('public/products/', $imageSrc);
+        }
 
         DB::beginTransaction();
 
@@ -94,7 +99,7 @@ class ProductService
         }
 
         foreach ($categories as $categoryId) {
-            $category = $this->findById($categoryId);
+            $category = $this->categoryService->findById($categoryId);
             if ($category) {
                 $isSaved = $this->productCategory->store(
                     $category->id,
