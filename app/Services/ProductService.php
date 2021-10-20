@@ -21,14 +21,19 @@ class ProductService
         $this->productCategory = $productCategoryRepository;
     }
 
-    public function getAll()
+    public function getAll(array $columns = [])
     {
-        return $this->productRepository->getAll();
+        return $this->productRepository->getAll($columns);
     }
 
     public function getAllPaginated()
     {
         return $this->productRepository->getAllPaginated();
+    }
+
+    public function findByName(string $name)
+    {
+        return $this->productRepository->findByName($name);
     }
 
     public function create(array $inputs)

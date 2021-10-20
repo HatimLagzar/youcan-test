@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Product;
+use App\Services\ProductService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 
@@ -22,14 +22,17 @@ class DeleteProduct extends Command
      */
     protected $description = 'Delete a product';
 
+    protected ProductService $productService;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(ProductService $productService)
     {
         parent::__construct();
+        $this->productService = $productService;
     }
 
     /**
@@ -41,10 +44,10 @@ class DeleteProduct extends Command
     {
         $this->table(
             ['ID', 'Name', 'Price'],
-            Product::all(['id', 'name', 'price'])->toArray()
+            $this->productService->getAll(['id', 'name', 'price'])->toArray()
         );
 
-        $choices = Arr::flatten(Product::all('name')->toArray());
+        $choices = Arr::flatten($this->productService->getAll(['name'])->toArray());
         if (count($choices) === 0) {
             $this->info('0 products found.');
             return Command::FAILURE;
@@ -55,7 +58,7 @@ class DeleteProduct extends Command
             $choices
         );
 
-        $product = Product::where('name', $productNameToBeDeleted)->first();
+        $product = $this->productService->findByName($productNameToBeDeleted);
         if (! $product) {
             $this->error('Product not found.');
             return Command::FAILURE;

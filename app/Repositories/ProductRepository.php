@@ -13,14 +13,19 @@ class ProductRepository
         $this->product = $product;
     }
 
-    public function getAll()
+    public function getAll(array $columns = [])
     {
-        return $this->product->with(['categories'])->get();
+        return $this->product->with(['categories'])->select(...$columns)->get();
     }
 
     public function getAllPaginated()
     {
         return $this->product->with(['categories'])->paginate(3);
+    }
+
+    public function findByName(string $name)
+    {
+        return $this->product->where('name', '=', $name)->first();
     }
 
     public function store(array $inputs)
