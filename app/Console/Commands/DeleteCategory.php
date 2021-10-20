@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Category;
 use App\Services\CategoryService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
