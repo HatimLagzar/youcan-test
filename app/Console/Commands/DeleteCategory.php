@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Category;
+use App\Services\CategoryService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 
@@ -22,14 +23,17 @@ class DeleteCategory extends Command
      */
     protected $description = 'Delete the category specified';
 
+    protected CategoryService $categoryService;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(CategoryService $categoryService)
     {
         parent::__construct();
+        $this->categoryService = $categoryService;
     }
 
     /**
@@ -41,24 +45,23 @@ class DeleteCategory extends Command
     {
         $this->table(
             ['ID', 'Name', 'Parent'],
-            Category::all('id', 'name', 'parent_id')->toArray()
+            $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
         );
 
-        $choices = Arr::flatten(Category::all('name')->toArray());
+        $choices = Arr::flatten($this->categoryService->getAll(['name'])->toArray());
         $categoryName = $this->choice('Select Category ID to be deleted', $choices);
-        $category = Category::where('name', $categoryName)->first();
+        $category = $this->categoryService->findByName($categoryName);
 
         if (! $category) {
             $this->error('Category not found.');
             return Command::FAILURE;
         }
 
-        $categoryId = $category->id;
         if ($category->delete()) {
             $this->info('Category deleted successfully.');
             $this->table(
                 ['ID', 'Name', 'Parent'],
-                Category::all(['id', 'name', 'parent_id'])->toArray()
+                $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
             );
             return Command::SUCCESS;
         } else {
