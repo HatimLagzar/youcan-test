@@ -94,6 +94,19 @@ class CreateProduct extends Command
             true
         );
 
+        $choices = array_map(function ($choice) {
+            $category = $this->categoryService->findByName($choice);
+            if ($category) {
+                return $category->id;
+            }
+        }, $choices);
+
+        $choices = Arr::where($choices, function ($choice) {
+            if ($choice) {
+                return $choice;
+            }
+        });
+
         DB::beginTransaction();
         $response = $this->productService->create([
             'name' => $name,
