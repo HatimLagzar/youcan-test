@@ -13,13 +13,23 @@ class CategoryRepository
         $this->category = $category;
     }
 
-    public function getAll()
+    public function getAll(array $columns = [])
     {
-        return $this->category->all();
+        return $this->category->all(...$columns);
     }
 
     public function findById(int $id)
     {
         return $this->category->find($id);
+    }
+
+    public function findByName(string $name)
+    {
+        return $this->category->where('name', '=', $name)->first();
+    }
+
+    public function create(array $inputs)
+    {
+        return $this->category->create($inputs);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Category;
+use App\Services\CategoryService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Symfony\Component\Console\Command\Command as CommandAlias;
@@ -23,14 +23,17 @@ class CreateCategory extends Command
      */
     protected $description = 'Create a category';
 
+    protected CategoryService $categoryService;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(CategoryService $categoryService)
     {
         parent::__construct();
+        $this->categoryService = $categoryService;
     }
 
     /**
@@ -45,10 +48,10 @@ class CreateCategory extends Command
 
         $this->table(
             ['ID', 'Name', 'Parent'],
-            Category::all('id', 'name', 'parent_id')->toArray()
+            $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
         );
 
-        $choices = ['None', ...Arr::flatten(Category::all('name')->toArray())];
+        $choices = ['None', ...Arr::flatten($this->categoryService->getAll(['name'])->toArray())];
         $parentCategoryName = $this->choice(
             'Select Parent Category ID',
             $choices,
@@ -57,27 +60,23 @@ class CreateCategory extends Command
 
         if ($parentCategoryName === 'None') {
             $parentId = null;
+            $parentCategory = null;
+        }
+        else {
+            $parentCategory = $this->categoryService->findByName($parentCategoryName);
         }
 
-        $parentCategory = Category::where('name', $parentCategoryName)->first();
-        if (! $parentCategory) {
+        if (!$parentCategory && $parentCategoryName !== 'None') {
             $this->error('Parent category not found in the database.');
             return Command::FAILURE;
         }
 
-        if ($parentCategoryName !== 'None') {
-            $parentId = $parentCategory->id;
-        }
-
-        $category = Category::create([
-            'name' => $name,
-            'parent_id' => $parentId
-        ]);
+        $category = $this->categoryService->create($name, $parentCategory ? $parentCategory->id : null);
 
         if ($category) {
             $this->table(
                 ['id', 'name', 'parent id'],
-                Category::all(['id', 'name', 'parent_id'])->toArray()
+                $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
             );
             $this->info('Category created successfully.');
             return Command::SUCCESS;

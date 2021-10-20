@@ -19,9 +19,9 @@ class CategoryService
         $this->productCategory = $productCategoryRepository;
     }
 
-    public function getAll()
+    public function getAll(array $columns = [])
     {
-        return $this->categoryRepository->getAll();
+        return $this->categoryRepository->getAll($columns);
     }
 
     public function findById(int $id)
@@ -29,21 +29,17 @@ class CategoryService
         return $this->categoryRepository->findById($id);
     }
 
-    public function create(int $categoryId, int $productId): bool
+    public function findByName(string $name)
     {
-        $category = $this->findById($categoryId);
-        if ($category) {
-            $isSaved = $this->createProductCategory(
-                $category->id,
-                $productId
-            );
+        return $this->categoryRepository->findByName($name);
+    }
 
-            if (!$isSaved) {
-                return false;
-            }
-        }
-
-        return true;
+    public function create(string $name, $parentId)
+    {
+        return $this->categoryRepository->create([
+            'name' => $name,
+            'parent_id' => $parentId
+        ]);
     }
 
     public function createProductCategory(int $categoryId, int $productId): bool
