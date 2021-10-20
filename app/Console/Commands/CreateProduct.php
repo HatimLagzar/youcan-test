@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Category;
-use App\Models\Product;
-use App\Models\ProductCategory;
+use App\Services\CategoryService;
+use App\Services\ProductService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -25,14 +24,23 @@ class CreateProduct extends Command
      */
     protected $description = 'Create a product';
 
+    protected ProductService $productService;
+
+    protected CategoryService $categoryService;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(
+        ProductService  $productService,
+        CategoryService $categoryService
+    )
     {
         parent::__construct();
+        $this->productService = $productService;
+        $this->categoryService = $categoryService;
     }
 
     /**
@@ -47,28 +55,31 @@ class CreateProduct extends Command
         $price = null;
         $image_src = null;
 
-        while (! $name) {
-            $name = filter_var($this->ask('Enter product name'), FILTER_SANITIZE_STRING);
+        while (!$name) {
+            $name = $this->ask('Enter product name');
         }
 
-        while (! $description) {
-            $description = filter_var($this->ask('Enter product description'), FILTER_SANITIZE_STRING);
+        while (!$description) {
+            $description = $this->ask('Enter product description');
         }
 
-        while (! $price || ! is_numeric($price)) {
-            $price = filter_var($this->ask('Enter product price (Number)'), FILTER_SANITIZE_NUMBER_FLOAT);
+        while (!$price || !is_numeric($price)) {
+            $price = $this->ask('Enter product price (Number)');
         }
 
-        while (! $image_src) {
-            $image_src = filter_var($this->ask('Enter product image, URL or local path'), FILTER_SANITIZE_URL);
+        while (!$image_src) {
+            $image_src = $this->ask('Enter product image, URL or local path');
         }
 
         $this->table(
             ['ID', 'Name', 'Parent'],
-            Category::all(['id', 'name', 'parent_id'])->toArray()
+            $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
         );
 
-        $productCategoriesChoices = Category::all(['name'])->toArray();
+        $productCategoriesChoices = $this->categoryService
+            ->getAll(['name'])
+            ->toArray();
+
         if (count($productCategoriesChoices) === 0) {
             $this->info('0 categories found.');
             return Command::FAILURE;
@@ -84,33 +95,18 @@ class CreateProduct extends Command
         );
 
         DB::beginTransaction();
-        $product = new Product();
-        $product->name = $name;
-        $product->description = $description;
-        $product->price = floatval($price);
-        $product->image_src = $image_src;
-        if (! $product->save()) {
-            DB::rollBack();
-            $this->error('Unknown error occured while saving the product.');
-            return Command::FAILURE;
-        }
+        $response = $this->productService->create([
+            'name' => $name,
+            'description' => $price,
+            'price' => floatval($price),
+            'image_src' => $image_src,
+            'categories' => $choices ?? null
+        ]);
 
-        foreach ($choices as $choice) {
-            if ($choice !== 'None') {
-                $category = Category::where('name', $choice)->first();
-                if ($category) {
-                    $productCategory = new ProductCategory();
-                    $productCategory->product_id = $product->id;
-                    $productCategory->category_id = $category->id;
-                    if (! $productCategory->save()) {
-                        DB::rollBack();
-                        $this->error('Unknown error occured while saving the categories.');
-                        return Command::FAILURE;
-                    }
-                } else {
-                    $this->warn("Category {$choice} not found in the database.");
-                }
-            }
+        if (!$response->original['status'] != 200) {
+            DB::rollBack();
+            $this->error($response->original['msg']);
+            return Command::FAILURE;
         }
 
         DB::commit();
