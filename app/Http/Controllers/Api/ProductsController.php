@@ -26,14 +26,6 @@ class ProductsController extends Controller
 
     public function store(Request $request)
     {
-        $inputs = [
-            'name' => $request->input('name'),
-            'description' => $request->input('description'),
-            'price' => $request->input('price'),
-            'categories' => $request->input('categories'),
-            'image' => $request->file('image'),
-        ];
-
-        return $this->productService->create($inputs);
+        return $this->productService->create($request->all());
     }
 }
