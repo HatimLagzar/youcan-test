@@ -42,9 +42,22 @@ class ProductService
             'name' => 'string|required',
             'description' => 'string|required',
             'price' => 'numeric|required',
-            'image' => 'image|max:10000|required',
             'categories.*' => 'numeric|nullable'
         ]);
+
+        $image = $inputs['image'];
+        if (!is_string($image)) {
+            $imageValidation = Validator::make(['image' => $image], [
+                'image' => 'image|max:10000|required',
+            ]);
+
+            if ($imageValidation->fails()) {
+                return response([
+                    'status' => 400,
+                    'msg' => $imageValidation->errors()->first()
+                ]);
+            }
+        }
 
         if ($validation->fails()) {
             return response([
@@ -60,7 +73,7 @@ class ProductService
         $categories = $inputs['categories'] ?? [];
         $categories = filter_var_array($categories, FILTER_SANITIZE_NUMBER_INT);
         $image = $inputs['image'];
-        $imageSrc = $image->hashName();
+        $imageSrc = is_string($image) ? $image : $image->hashName();
         $image->storeAs('public/products/', $imageSrc);
 
         DB::beginTransaction();
@@ -72,7 +85,7 @@ class ProductService
             'image_src' => $imageSrc
         ]);
 
-        if (! $product) {
+        if (!$product) {
             DB::rollBack();
             return response([
                 'status' => 500,

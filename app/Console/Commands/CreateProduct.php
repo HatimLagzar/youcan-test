@@ -99,7 +99,7 @@ class CreateProduct extends Command
             'name' => $name,
             'description' => $price,
             'price' => floatval($price),
-            'image_src' => $image_src,
+            'image' => $image_src,
             'categories' => $choices ?? null
         ]);
 
