@@ -1,11 +1,15 @@
 # Setup
 
 ```
+composer install
+
 cp .env.example .env
 php artisan key:generate
 php artisan storage:link
+
+// Make sure you have the correct database options in .env before running this command
 php artisan migrate
-composer install
+
 npm install
 ```
 
