@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Repositories\ProductCategoryRepository;
 use App\Repositories\ProductRepository;
 use Exception;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ProductService
