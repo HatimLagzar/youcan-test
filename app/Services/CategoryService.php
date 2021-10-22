@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\CategoryRepository;
 use App\Repositories\ProductCategoryRepository;
+use Exception;
 
 class CategoryService
 {
@@ -34,12 +35,21 @@ class CategoryService
         return $this->categoryRepository->findByName($name);
     }
 
+    /**
+     * @throws Exception
+     */
     public function create(string $name, $parentId)
     {
-        return $this->categoryRepository->create([
+        $category = $this->categoryRepository->create([
             'name' => $name,
             'parent_id' => $parentId
         ]);
+
+        if (!$category) {
+            throw new Exception('Unknown error occured while creating a category.', 500);
+        }
+
+        return $category;
     }
 
     public function createProductCategory(int $categoryId, int $productId): bool
