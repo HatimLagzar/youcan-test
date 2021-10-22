@@ -68,7 +68,7 @@ class CreateProduct extends Command
         }
 
         while (!$imageSrc) {
-            $image_src = $this->ask('Enter product image, URL or local path');
+            $imageSrc = $this->ask('Enter product image, URL or local path');
         }
 
         $this->table(
@@ -107,20 +107,20 @@ class CreateProduct extends Command
             }
         });
 
-        $response = $this->productService->create([
-            'name' => $name,
-            'description' => $price,
-            'price' => floatval($price),
-            'image' => $image_src,
-            'categories' => $choices ?? null
-        ]);
+        try {
+            $this->productService->create([
+                'name' => $name,
+                'description' => $price,
+                'price' => floatval($price),
+                'image' => $imageSrc,
+                'categories' => $choices ?? null
+            ]);
 
-        if (!$response->original['status'] != 200) {
-            $this->error($response->original['msg']);
+            $this->info('Product created successfully.');
+            return Command::SUCCESS;
+        } catch (\Exception $exception) {
+            $this->error($exception->getMessage());
             return Command::FAILURE;
         }
-
-        $this->info('Product created successfully.');
-        return Command::SUCCESS;
     }
 }
