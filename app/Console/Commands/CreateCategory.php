@@ -42,7 +42,7 @@ class CreateCategory extends Command
     public function handle(): int
     {
         $name = null;
-        while (! $name) {
+        while (!$name) {
             $name = filter_var($this->ask('Enter Category Name'), FILTER_SANITIZE_STRING);
         }
 
@@ -59,10 +59,8 @@ class CreateCategory extends Command
         );
 
         if ($parentCategoryName === 'None') {
-            $parentId = null;
             $parentCategory = null;
-        }
-        else {
+        } else {
             $parentCategory = $this->categoryService->findByName($parentCategoryName);
         }
 
@@ -71,17 +69,16 @@ class CreateCategory extends Command
             return Command::FAILURE;
         }
 
-        $category = $this->categoryService->create($name, $parentCategory ? $parentCategory->id : null);
-
-        if ($category) {
+        try {
+            $this->categoryService->create($name, $parentCategory ? $parentCategory->id : null);
             $this->table(
                 ['id', 'name', 'parent id'],
                 $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
             );
             $this->info('Category created successfully.');
             return Command::SUCCESS;
-        } else {
-            $this->error('Unknown error occured while creating the category, please retry later.');
+        } catch (\Exception $exception) {
+            $this->error($exception->getMessage());
             return Command::FAILURE;
         }
     }
