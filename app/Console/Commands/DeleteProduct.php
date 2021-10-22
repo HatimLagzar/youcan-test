@@ -42,9 +42,18 @@ class DeleteProduct extends Command
      */
     public function handle(): int
     {
+        $products = $this->productService->getAll(['id', 'name', 'price'])->toArray();
+        $products = array_map(function ($product) {
+            return [
+                'id' => $product['id'],
+                'name' => $product['name'],
+                'price' => $product['price']
+            ];
+        }, $products);
+
         $this->table(
             ['ID', 'Name', 'Price'],
-            $this->productService->getAll(['id', 'name', 'price'])->toArray()
+            $products
         );
 
         $choices = Arr::flatten($this->productService->getAll(['name'])->toArray());
