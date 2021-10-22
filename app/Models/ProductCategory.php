@@ -17,5 +17,6 @@ class ProductCategory extends Model
     use HasFactory;
 
     protected $table = 'products_categories';
+    protected $fillable = ['category_id', 'product_id'];
     public $timestamps = false;
 }
