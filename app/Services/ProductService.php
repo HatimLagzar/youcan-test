@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Repositories\ProductCategoryRepository;
 use App\Repositories\ProductRepository;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -10,17 +9,17 @@ use Illuminate\Support\Facades\Validator;
 class ProductService
 {
     protected ProductRepository $productRepository;
-    protected ProductCategoryRepository $productCategory;
     protected CategoryService $categoryService;
+    protected ProductCategoryService $productCategoryService;
 
     public function __construct(
-        ProductRepository         $productRepository,
-        ProductCategoryRepository $productCategoryRepository,
-        CategoryService           $categoryService
+        ProductRepository      $productRepository,
+        CategoryService        $categoryService,
+        ProductCategoryService $productCategoryService
     )
     {
         $this->productRepository = $productRepository;
-        $this->productCategory = $productCategoryRepository;
+        $this->productCategoryService = $productCategoryService;
         $this->categoryService = $categoryService;
     }
 
@@ -42,7 +41,7 @@ class ProductService
     /**
      * @throws Exception
      */
-    public function create(array $inputs)
+    public function validateInputs(array $inputs)
     {
         $validation = Validator::make($inputs, [
             'name' => 'string|required',
@@ -66,23 +65,37 @@ class ProductService
                 throw new Exception($imageValidation->errors()->first(), 400);
             }
         }
+    }
 
-        $name = filter_var($inputs['name'], FILTER_SANITIZE_STRING);
-        $description = filter_var($inputs['description'], FILTER_SANITIZE_STRING);
-        $price = filter_var($inputs['price'], FILTER_SANITIZE_NUMBER_FLOAT);
-        $price = floatval($price);
-        $categories = $inputs['categories'] ?? [];
-        $categories = filter_var_array($categories, FILTER_SANITIZE_NUMBER_INT);
-        $image = $inputs['image'];
-        $imageSrc = is_string($image) ? $image : $image->hashName();
-        if (!is_string($image)) {
-            $image->storeAs('public/products/', $imageSrc);
+    public function sanitizeInputs(array $inputs): array
+    {
+        $inputs['name'] = filter_var($inputs['name'], FILTER_SANITIZE_STRING);
+        $inputs['description'] = filter_var($inputs['description'], FILTER_SANITIZE_STRING);
+        $inputs['price'] = filter_var($inputs['price'], FILTER_SANITIZE_NUMBER_FLOAT);
+        $inputs['price'] = floatval($inputs['price']);
+        $inputs['categories'] = $inputs['categories'] ?? [];
+        $inputs['categories'] = filter_var_array($inputs['categories'], FILTER_SANITIZE_NUMBER_INT);
+
+        return $inputs;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function create(array $inputs)
+    {
+        $this->validateInputs($inputs);
+        $inputs = $this->sanitizeInputs($inputs);
+
+        $imageSrc = is_string($inputs['image']) ? $inputs['image'] : $inputs['image']->hashName();
+        if (!is_string($inputs['image'])) {
+            $inputs['image']->storeAs('public/products/', $imageSrc);
         }
 
         $product = $this->productRepository->store([
-            'name' => $name,
-            'description' => $description,
-            'price' => $price,
+            'name' => $inputs['name'],
+            'description' => $inputs['description'],
+            'price' => $inputs['price'],
             'image_src' => $imageSrc
         ]);
 
@@ -90,19 +103,7 @@ class ProductService
             throw new Exception('Unknown error occurred while saving the product.', 500);
         }
 
-        foreach ($categories as $categoryId) {
-            $category = $this->categoryService->findById($categoryId);
-            if ($category) {
-                $productCategory = $this->productCategory->store(
-                    $category->id,
-                    $product->id
-                );
-
-                if (!$productCategory) {
-                    throw new Exception('Unknown error occurred while saving categories, retry later or contact the support.', 500);
-                }
-            }
-        }
+        $this->productCategoryService->createProductCategories($inputs['categories'], $product->id);
 
         return $product;
     }
