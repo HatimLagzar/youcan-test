@@ -13,15 +13,11 @@ class ProductCategoryRepository
         $this->productCategory = $productCategory;
     }
 
-    public function store(int $categoryId, int $productId): bool
+    public function store(int $categoryId, int $productId)
     {
-        $productCategory = new ProductCategory();
-        $productCategory->category_id = $categoryId;
-        $productCategory->product_id = $productId;
-        if (!$productCategory->save()) {
-            return false;
-        }
-
-        return true;
+        return $this->productCategory->create([
+            'category_id' => $categoryId,
+            'product_id' => $productId,
+        ]);
     }
 }
