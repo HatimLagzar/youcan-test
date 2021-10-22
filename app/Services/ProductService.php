@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Repositories\ProductCategoryRepository;
 use App\Repositories\ProductRepository;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -29,9 +30,9 @@ class ProductService
         return $this->productRepository->getAll($columns);
     }
 
-    public function getAllPaginated()
+    public function getAllPaginated($request)
     {
-        return $this->productRepository->getAllPaginated();
+        return $this->productRepository->getAllPaginated($request);
     }
 
     public function findByName(string $name)
@@ -39,6 +40,9 @@ class ProductService
         return $this->productRepository->findByName($name);
     }
 
+    /**
+     * @throws Exception
+     */
     public function create(array $inputs)
     {
         $validation = Validator::make($inputs, [
@@ -55,18 +59,12 @@ class ProductService
             ]);
 
             if ($imageValidation->fails()) {
-                return response([
-                    'status' => 400,
-                    'msg' => $imageValidation->errors()->first()
-                ]);
+                throw new Exception($imageValidation->errors()->first(), 400);
             }
         }
 
         if ($validation->fails()) {
-            return response([
-                'status' => 400,
-                'msg' => $validation->errors()->first()
-            ]);
+            throw new Exception($validation->errors()->first(), 400);
         }
 
         $name = filter_var($inputs['name'], FILTER_SANITIZE_STRING);
@@ -89,33 +87,23 @@ class ProductService
         ]);
 
         if (!$product) {
-            return response([
-                'status' => 500,
-                'msg' => 'Unknown error occurred while saving the product.'
-            ]);
+            throw new Exception('Unknown error occurred while saving the product.', 500);
         }
 
         foreach ($categories as $categoryId) {
             $category = $this->categoryService->findById($categoryId);
             if ($category) {
-                $isSaved = $this->productCategory->store(
+                $productCategory = $this->productCategory->store(
                     $category->id,
                     $product->id
                 );
 
-                if (!$isSaved) {
-                    return response([
-                        'status' => 500,
-                        'msg' => 'Unknown error occurred while saving categories, retry later or contact the support.'
-                    ]);
+                if (!$productCategory) {
+                    throw new Exception('Unknown error occurred while saving categories, retry later or contact the support.', 500);
                 }
             }
         }
 
-        return response([
-            'status' => 200,
-            'msg' => 'Product created successfully.',
-            'product' => $product
-        ]);
+        return $product;
     }
 }
