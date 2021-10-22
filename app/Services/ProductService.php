@@ -48,8 +48,13 @@ class ProductService
             'name' => 'string|required',
             'description' => 'string|required',
             'price' => 'numeric|required',
-            'categories.*' => 'numeric|nullable'
+            'categories.*' => 'numeric|nullable',
+            'image' => 'required',
         ]);
+
+        if ($validation->fails()) {
+            throw new Exception($validation->errors()->first(), 400);
+        }
 
         $image = $inputs['image'];
         if (!is_string($image)) {
@@ -60,10 +65,6 @@ class ProductService
             if ($imageValidation->fails()) {
                 throw new Exception($imageValidation->errors()->first(), 400);
             }
-        }
-
-        if ($validation->fails()) {
-            throw new Exception($validation->errors()->first(), 400);
         }
 
         $name = filter_var($inputs['name'], FILTER_SANITIZE_STRING);
