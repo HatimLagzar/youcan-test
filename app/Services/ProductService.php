@@ -81,8 +81,6 @@ class ProductService
             $image->storeAs('public/products/', $imageSrc);
         }
 
-        DB::beginTransaction();
-
         $product = $this->productRepository->store([
             'name' => $name,
             'description' => $description,
@@ -91,7 +89,6 @@ class ProductService
         ]);
 
         if (!$product) {
-            DB::rollBack();
             return response([
                 'status' => 500,
                 'msg' => 'Unknown error occurred while saving the product.'
@@ -115,7 +112,6 @@ class ProductService
             }
         }
 
-        DB::commit();
         return response([
             'status' => 200,
             'msg' => 'Product created successfully.',

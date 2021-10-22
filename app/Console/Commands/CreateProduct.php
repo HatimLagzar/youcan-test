@@ -107,7 +107,6 @@ class CreateProduct extends Command
             }
         });
 
-        DB::beginTransaction();
         $response = $this->productService->create([
             'name' => $name,
             'description' => $price,
@@ -117,12 +116,10 @@ class CreateProduct extends Command
         ]);
 
         if (!$response->original['status'] != 200) {
-            DB::rollBack();
             $this->error($response->original['msg']);
             return Command::FAILURE;
         }
 
-        DB::commit();
         $this->info('Product created successfully.');
         return Command::SUCCESS;
     }
