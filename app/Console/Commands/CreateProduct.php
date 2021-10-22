@@ -53,7 +53,7 @@ class CreateProduct extends Command
         $name = null;
         $description = null;
         $price = null;
-        $image_src = null;
+        $imageSrc = null;
 
         while (!$name) {
             $name = $this->ask('Enter product name');
@@ -67,7 +67,7 @@ class CreateProduct extends Command
             $price = $this->ask('Enter product price (Number)');
         }
 
-        while (!$image_src) {
+        while (!$imageSrc) {
             $image_src = $this->ask('Enter product image, URL or local path');
         }
 
