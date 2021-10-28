@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\DatabaseManipulationException;
 use App\Repositories\CategoryRepository;
 use App\Repositories\ProductCategoryRepository;
 use Exception;
@@ -46,7 +47,7 @@ class CategoryService
         ]);
 
         if (!$category) {
-            throw new Exception('Unknown error occured while creating a category.', 500);
+            throw new DatabaseManipulationException('Unknown error occured while creating a category.');
         }
 
         return $category;

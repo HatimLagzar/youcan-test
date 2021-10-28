@@ -2,6 +2,7 @@
 
 namespace App\Validators;
 
+use App\Exceptions\ValidationException;
 use Exception;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,6 +13,16 @@ class ProductValidator
      */
     public static function validate(array $inputs)
     {
+        self::validateInputs($inputs);
+        self::validateImage($inputs['image']);
+    }
+
+    /**
+     * @param array $inputs
+     * @throws ValidationException
+     */
+    public static function validateInputs(array $inputs): void
+    {
         $validation = Validator::make($inputs, [
             'name' => 'string|required',
             'description' => 'string|required',
@@ -21,17 +32,23 @@ class ProductValidator
         ]);
 
         if ($validation->fails()) {
-            throw new Exception($validation->errors()->first(), 400);
+            throw new ValidationException($validation->errors()->first());
         }
+    }
 
-        $image = $inputs['image'];
+    /**
+     * @param $image
+     * @throws ValidationException
+     */
+    public static function validateImage($image): void
+    {
         if (!is_string($image)) {
             $imageValidation = Validator::make(['image' => $image], [
                 'image' => 'image|max:10000|required',
             ]);
 
             if ($imageValidation->fails()) {
-                throw new Exception($imageValidation->errors()->first(), 400);
+                throw new ValidationException($imageValidation->errors()->first(), 400);
             }
         }
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\DatabaseManipulationException;
 use App\Repositories\CategoryRepository;
 use App\Repositories\ProductCategoryRepository;
 use Exception;
@@ -31,7 +32,7 @@ class ProductCategoryService
     }
 
     /**
-     * @throws Exception
+     * @throws DatabaseManipulationException
      */
     public function createProductCategories(array $categories, int $productId)
     {
@@ -44,7 +45,7 @@ class ProductCategoryService
                 );
 
                 if (!$productCategory) {
-                    throw new Exception('Unknown error occurred while saving categories, retry later or contact the support.', 500);
+                    throw new DatabaseManipulationException('Unknown error occurred while saving categories, retry later or contact the support.');
                 }
             }
         }

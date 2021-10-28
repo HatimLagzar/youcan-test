@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\DatabaseManipulationException;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
 use Exception;
@@ -71,7 +72,7 @@ class ProductService
         ]);
 
         if (!$product) {
-            throw new Exception('Unknown error occurred while saving the product.', 500);
+            throw new DatabaseManipulationException('Unknown error occurred while saving the product.');
         }
 
         $this->productCategoryService->createProductCategories($inputs['categories'], $product->id);
