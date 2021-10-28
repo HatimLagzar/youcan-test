@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Repositories\ProductRepository;
+use App\Validators\ProductValidator;
 use Exception;
-use Illuminate\Support\Facades\Validator;
 
 class ProductService
 {
@@ -38,35 +38,6 @@ class ProductService
         return $this->productRepository->findByName($name);
     }
 
-    /**
-     * @throws Exception
-     */
-    public function validateInputs(array $inputs)
-    {
-        $validation = Validator::make($inputs, [
-            'name' => 'string|required',
-            'description' => 'string|required',
-            'price' => 'numeric|required',
-            'categories.*' => 'numeric|nullable',
-            'image' => 'required',
-        ]);
-
-        if ($validation->fails()) {
-            throw new Exception($validation->errors()->first(), 400);
-        }
-
-        $image = $inputs['image'];
-        if (!is_string($image)) {
-            $imageValidation = Validator::make(['image' => $image], [
-                'image' => 'image|max:10000|required',
-            ]);
-
-            if ($imageValidation->fails()) {
-                throw new Exception($imageValidation->errors()->first(), 400);
-            }
-        }
-    }
-
     public function sanitizeInputs(array $inputs): array
     {
         $inputs['name'] = filter_var($inputs['name'], FILTER_SANITIZE_STRING);
@@ -84,7 +55,7 @@ class ProductService
      */
     public function create(array $inputs)
     {
-        $this->validateInputs($inputs);
+        ProductValidator::validate($inputs);
         $inputs = $this->sanitizeInputs($inputs);
 
         $imageSrc = is_string($inputs['image']) ? $inputs['image'] : $inputs['image']->hashName();
