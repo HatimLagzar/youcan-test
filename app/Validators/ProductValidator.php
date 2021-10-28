@@ -2,6 +2,7 @@
 
 namespace App\Validators;
 
+use App\Exceptions\ImageValidationException;
 use App\Exceptions\ValidationException;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -38,7 +39,7 @@ class ProductValidator
 
     /**
      * @param $image
-     * @throws ValidationException
+     * @throws ImageValidationException
      */
     public static function validateImage($image): void
     {
@@ -48,7 +49,7 @@ class ProductValidator
             ]);
 
             if ($imageValidation->fails()) {
-                throw new ValidationException($imageValidation->errors()->first(), 400);
+                throw new ImageValidationException($imageValidation->errors()->first());
             }
         }
     }
