@@ -6,7 +6,6 @@ use App\Services\CategoryService;
 use App\Services\ProductService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 
 class CreateProduct extends Command
 {
@@ -82,7 +81,6 @@ class CreateProduct extends Command
 
         if (count($productCategoriesChoices) === 0) {
             $this->info('0 categories found.');
-            return Command::FAILURE;
         }
 
         $productCategoriesChoices = ['None', ...Arr::flatten($productCategoriesChoices)];
@@ -110,7 +108,7 @@ class CreateProduct extends Command
         try {
             $this->productService->create([
                 'name' => $name,
-                'description' => $price,
+                'description' => $description,
                 'price' => floatval($price),
                 'image' => $imageSrc,
                 'categories' => $choices ?? null
