@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\DatabaseManipulationException;
 use App\Services\CategoryService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
-use Symfony\Component\Console\Command\Command as CommandAlias;
 
 class CreateCategory extends Command
 {
@@ -46,11 +46,6 @@ class CreateCategory extends Command
             $name = filter_var($this->ask('Enter Category Name'), FILTER_SANITIZE_STRING);
         }
 
-        $this->table(
-            ['ID', 'Name', 'Parent'],
-            $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
-        );
-
         $choices = ['None', ...Arr::flatten($this->categoryService->getAll(['name'])->toArray())];
         $parentCategoryName = $this->choice(
             'Select Parent Category ID',
@@ -71,13 +66,9 @@ class CreateCategory extends Command
 
         try {
             $this->categoryService->create($name, $parentCategory ? $parentCategory->id : null);
-            $this->table(
-                ['id', 'name', 'parent id'],
-                $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
-            );
             $this->info('Category created successfully.');
             return Command::SUCCESS;
-        } catch (\Exception $exception) {
+        } catch (DatabaseManipulationException $exception) {
             $this->error($exception->getMessage());
             return Command::FAILURE;
         }
