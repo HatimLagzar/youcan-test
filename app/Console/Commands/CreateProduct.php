@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\DatabaseManipulationException;
+use App\Exceptions\ImageValidationException;
+use App\Exceptions\ValidationException;
 use App\Services\CategoryService;
 use App\Services\ProductService;
 use Illuminate\Console\Command;
@@ -116,7 +119,7 @@ class CreateProduct extends Command
 
             $this->info('Product created successfully.');
             return Command::SUCCESS;
-        } catch (\Exception $exception) {
+        } catch (ValidationException | ImageValidationException | DatabaseManipulationException $exception) {
             $this->error($exception->getMessage());
             return Command::FAILURE;
         }

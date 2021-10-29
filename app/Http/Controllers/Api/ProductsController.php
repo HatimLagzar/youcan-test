@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\DatabaseManipulationException;
+use App\Exceptions\ImageValidationException;
+use App\Exceptions\ValidationException;
 use App\Http\Controllers\Controller;
 use App\Services\ProductService;
-use Exception;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller
@@ -34,7 +36,7 @@ class ProductsController extends Controller
                 'msg' => 'Product created successfully.',
                 'product' => $product
             ]);
-        } catch (Exception $exception) {
+        } catch (ValidationException | ImageValidationException | DatabaseManipulationException $exception) {
             return response([
                 'status' => $exception->getCode(),
                 'msg' => $exception->getMessage()
