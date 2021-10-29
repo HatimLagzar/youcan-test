@@ -3,8 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\Product;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ProductRepository
 {
@@ -20,12 +18,12 @@ class ProductRepository
         return $this->product->with(['categories'])->select(...$columns)->get();
     }
 
-    public function getAllPaginated(Request $request)
+    public function getAllPaginated()
     {
         return $this->product->with(['categories'])->paginate(3);
     }
 
-    public function findByName(string $name)
+    public function findByName(string $name): ?Product
     {
         return $this->product->where('name', '=', $name)->first();
     }
