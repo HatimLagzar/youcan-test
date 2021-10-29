@@ -41,7 +41,7 @@ class ProductService
         return $this->productRepository->findByName($name);
     }
 
-    public function sanitizeInputs(array $inputs): array
+    private function sanitizeInputs(array $inputs): array
     {
         $inputs['name'] = filter_var($inputs['name'], FILTER_SANITIZE_STRING);
         $inputs['description'] = filter_var($inputs['description'], FILTER_SANITIZE_STRING);
