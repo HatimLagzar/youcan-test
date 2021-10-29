@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Product;
 
 use App\Exceptions\DatabaseManipulationException;
 use App\Exceptions\ImageValidationException;
