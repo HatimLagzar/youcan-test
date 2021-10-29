@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Exceptions\DatabaseManipulationException;
+use App\Exceptions\ImageValidationException;
+use App\Exceptions\ValidationException;
+use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
-use Exception;
 
 class ProductService
 {
@@ -29,9 +31,9 @@ class ProductService
         return $this->productRepository->getAll($columns);
     }
 
-    public function getAllPaginated($request)
+    public function getAllPaginated()
     {
-        return $this->productRepository->getAllPaginated($request);
+        return $this->productRepository->getAllPaginated();
     }
 
     public function findByName(string $name)
@@ -52,9 +54,11 @@ class ProductService
     }
 
     /**
-     * @throws Exception
+     * @throws DatabaseManipulationException
+     * @throws ValidationException
+     * @throws ImageValidationException
      */
-    public function create(array $inputs)
+    public function create(array $inputs): Product
     {
         ProductValidator::validate($inputs);
         $inputs = $this->sanitizeInputs($inputs);

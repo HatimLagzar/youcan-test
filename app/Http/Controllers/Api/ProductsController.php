@@ -16,12 +16,12 @@ class ProductsController extends Controller
         $this->productService = $productService;
     }
 
-    public function all(Request $request)
+    public function all()
     {
         return response([
             'status' => 200,
             'msg' => 'Products pulled successfully.',
-            'products' => $this->productService->getAllPaginated($request)
+            'products' => $this->productService->getAllPaginated()
         ]);
     }
 
