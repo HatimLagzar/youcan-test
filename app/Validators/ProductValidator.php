@@ -27,7 +27,7 @@ class ProductValidator
         $validation = Validator::make($inputs, $this->rules());
 
         if ($validation->fails()) {
-            throw new ValidationException($validation->errors()->first());
+            throw new ValidationException($validation);
         }
     }
 
@@ -41,7 +41,7 @@ class ProductValidator
             $imageValidation = Validator::make(['image' => $image], $this->imageRules());
 
             if ($imageValidation->fails()) {
-                throw new ImageValidationException($imageValidation->errors()->first());
+                throw new ImageValidationException($imageValidation);
             }
         }
     }
