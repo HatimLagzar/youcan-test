@@ -4,13 +4,13 @@ namespace App\Validators;
 
 use App\Exceptions\ImageValidationException;
 use App\Exceptions\ValidationException;
-use Exception;
 use Illuminate\Support\Facades\Validator;
 
 class ProductValidator
 {
     /**
-     * @throws Exception
+     * @throws ValidationException
+     * @throws ImageValidationException
      */
     public static function validate(array $inputs)
     {
