@@ -8,22 +8,26 @@ use App\Exceptions\ValidationException;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ProductService
 {
     protected ProductRepository $productRepository;
     protected CategoryService $categoryService;
     protected ProductCategoryService $productCategoryService;
+    protected ProductValidator $productValidator;
 
     public function __construct(
         ProductRepository      $productRepository,
         CategoryService        $categoryService,
-        ProductCategoryService $productCategoryService
+        ProductCategoryService $productCategoryService,
+        ProductValidator       $productValidator
     )
     {
         $this->productRepository = $productRepository;
         $this->productCategoryService = $productCategoryService;
         $this->categoryService = $categoryService;
+        $this->productValidator = $productValidator;
     }
 
     public function getAll(array $columns = [])
@@ -31,12 +35,12 @@ class ProductService
         return $this->productRepository->getAll($columns);
     }
 
-    public function getAllPaginated()
+    public function getAllPaginated(): LengthAwarePaginator
     {
         return $this->productRepository->getAllPaginated();
     }
 
-    public function findByName(string $name)
+    public function findByName(string $name): ?Product
     {
         return $this->productRepository->findByName($name);
     }
@@ -60,7 +64,7 @@ class ProductService
      */
     public function create(array $inputs): Product
     {
-        ProductValidator::validate($inputs);
+        $this->productValidator->validate($inputs);
         $inputs = $this->sanitizeInputs($inputs);
 
         $imageSrc = is_string($inputs['image']) ? $inputs['image'] : $inputs['image']->hashName();

@@ -12,25 +12,19 @@ class ProductValidator
      * @throws ValidationException
      * @throws ImageValidationException
      */
-    public static function validate(array $inputs)
+    public function validate(array $inputs)
     {
-        self::validateInputs($inputs);
-        self::validateImage($inputs['image']);
+        $this->validateInputs($inputs);
+        $this->validateImage($inputs['image']);
     }
 
     /**
      * @param array $inputs
      * @throws ValidationException
      */
-    public static function validateInputs(array $inputs): void
+    private function validateInputs(array $inputs): void
     {
-        $validation = Validator::make($inputs, [
-            'name' => 'string|required',
-            'description' => 'string|required',
-            'price' => 'numeric|required',
-            'categories.*' => 'numeric|nullable',
-            'image' => 'required',
-        ]);
+        $validation = Validator::make($inputs, $this->rules());
 
         if ($validation->fails()) {
             throw new ValidationException($validation->errors()->first());
@@ -41,16 +35,32 @@ class ProductValidator
      * @param $image
      * @throws ImageValidationException
      */
-    public static function validateImage($image): void
+    private function validateImage($image): void
     {
         if (!is_string($image)) {
-            $imageValidation = Validator::make(['image' => $image], [
-                'image' => 'image|max:10000|required',
-            ]);
+            $imageValidation = Validator::make(['image' => $image], $this->imageRules());
 
             if ($imageValidation->fails()) {
                 throw new ImageValidationException($imageValidation->errors()->first());
             }
         }
+    }
+
+    private function rules(): array
+    {
+        return [
+            'name' => 'string|required',
+            'description' => 'string|required',
+            'price' => 'numeric|required',
+            'categories.*' => 'numeric|nullable',
+            'image' => 'required',
+        ];
+    }
+
+    private function imageRules(): array
+    {
+        return [
+            'image' => 'image|max:10000|required',
+        ];
     }
 }
