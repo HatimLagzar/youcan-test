@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class ProductService
 {
@@ -30,7 +31,7 @@ class ProductService
         $this->productValidator = $productValidator;
     }
 
-    public function getAll(array $columns = [])
+    public function getAll(array $columns = []): Collection
     {
         return $this->productRepository->getAll($columns);
     }
