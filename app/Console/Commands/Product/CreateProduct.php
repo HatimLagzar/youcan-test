@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Product;
 
+use App\Console\Services\InputService;
 use App\Exceptions\DatabaseManipulationException;
 use App\Exceptions\ImageValidationException;
 use App\Exceptions\ValidationException;
@@ -30,6 +31,8 @@ class CreateProduct extends Command
 
     protected CategoryService $categoryService;
 
+    protected InputService $inputService;
+
     /**
      * Create a new command instance.
      *
@@ -37,12 +40,14 @@ class CreateProduct extends Command
      */
     public function __construct(
         ProductService  $productService,
-        CategoryService $categoryService
+        CategoryService $categoryService,
+        InputService    $inputService
     )
     {
         parent::__construct();
         $this->productService = $productService;
         $this->categoryService = $categoryService;
+        $this->inputService = $inputService;
     }
 
     /**
@@ -52,31 +57,10 @@ class CreateProduct extends Command
      */
     public function handle(): int
     {
-        $name = null;
-        $description = null;
-        $price = null;
-        $imageSrc = null;
-
-        while (!$name) {
-            $name = $this->ask('Enter product name');
-        }
-
-        while (!$description) {
-            $description = $this->ask('Enter product description');
-        }
-
-        while (!$price || !is_numeric($price)) {
-            $price = $this->ask('Enter product price (Number)');
-        }
-
-        while (!$imageSrc) {
-            $imageSrc = $this->ask('Enter product image, URL or local path');
-        }
-
-        $this->table(
-            ['ID', 'Name', 'Parent'],
-            $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
-        );
+        $name = $this->inputService->ask('Enter product name');
+        $description = $this->inputService->ask('Enter product description');
+        $price = $this->inputService->askForNumber('Enter product price (Number)');
+        $imageSrc = $this->inputService->ask('Enter product image, URL or local path');
 
         $productCategoriesChoices = $this->categoryService
             ->getAll(['name'])
