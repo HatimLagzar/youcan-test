@@ -52,8 +52,7 @@ export default {
 					(item) => {
 						const categoryFound = item.categories.find(
 							(category) =>
-								parseInt(category.category_id) ===
-								parseInt(store.state.selectedCategory)
+								parseInt(category.category_id) === parseInt(store.state.selectedCategory)
 						)
 
 						if (categoryFound) {

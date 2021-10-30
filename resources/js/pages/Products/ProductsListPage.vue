@@ -30,59 +30,82 @@
 
 <script>
 import store from '../../store'
+import {fetchProductsCategories} from "../../api/categories";
 
 export default {
-	setup: () => ({}),
-	data: () => {
-		return {
-			products: store.state.filteredProducts,
-			pages: [],
-		}
-	},
-	mounted() {
-		this.getProducts()
-	},
+    setup: () => ({}),
 
-	methods: {
-		getProducts(page = 1) {
-			fetch('/api/products?page=' + page)
-				.then((response) => response.json())
-				.then((response) => {
-					if (response.status === 200) {
-						store.state.products = response.products
-						store.state.filteredProducts = store.state.products.data
-						$('select#category').val('')
-						store.state.selectedCategory = ''
-						$('select#sort-by').val('NAME')
-						store.state.sortBy = 'NAME'
-					} else {
-						toastr.error(response.msg)
-					}
-				})
-				.catch((error) => console.log(error))
-		},
+    data: () => {
+        return {
+            products: store.state.filteredProducts,
+            pages: [],
+        }
+    },
 
-		handlePaginationClick(e) {
-			e.preventDefault()
-			const pageId = e.currentTarget.getAttribute('data-url-id')
-			if (pageId) {
-				const page = this.pages.find((page) => page.id === pageId)
-				if (page) {
-					const pageNumber = page.url
-						.split('?')[1]
-						.split('&')
-						.map((item) => item.split('='))
-						.find((item) => item[0] == 'page')[1]
+    mounted() {
+        this.getProductsCategories()
+            .then(() => {
+                this.getProducts()
+            })
+    },
 
-					this.getProducts(parseInt(pageNumber))
-				}
-			}
+    methods: {
+        getProducts(page = 1) {
+            fetch('/api/products?page=' + page)
+                .then((response) => response.json())
+                .then((response) => {
+                    if (response.status === 200) {
+                        let products = response.products
+                        products.data = products.data.map(product => {
+                            product.categories = store.state.productsCategories
+                                .filter(category => parseInt(category.product_id) === parseInt(product.id))
 
-			return
-		},
+                            return product
+                        })
 
-		randomBytes(length) {
-			let result = ''
+                        store.state.products = products
+                        store.state.filteredProducts = products.data
+                        $('select#category').val('')
+                        store.state.selectedCategory = ''
+                        $('select#sort-by').val('NAME')
+                        store.state.sortBy = 'NAME'
+                    } else {
+                        toastr.error(response.msg)
+                    }
+                })
+                .catch((error) => console.log(error))
+        },
+
+        getProductsCategories() {
+            return fetchProductsCategories()
+                .then(response => {
+                    if (response.status === 200) {
+                        store.state.productsCategories = response.productsCategories
+                    } else {
+                        toastr.error(response.msg || "Couldn't get products categories")
+                    }
+                })
+        },
+
+        handlePaginationClick(e) {
+            e.preventDefault()
+            const pageId = e.currentTarget.getAttribute('data-url-id')
+            if (pageId) {
+                const page = this.pages.find((page) => page.id === pageId)
+                if (page) {
+                    const pageNumber = page.url
+                        .split('?')[1]
+                        .split('&')
+                        .map((item) => item.split('='))
+                        .find((item) => item[0] == 'page')[1]
+
+                    this.getProducts(parseInt(pageNumber))
+                }
+            }
+        },
+
+        randomBytes(length) {
+            let result = ''
 			let characters =
 				'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 			let charactersLength = characters.length

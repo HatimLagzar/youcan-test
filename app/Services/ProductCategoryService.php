@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Exceptions\DatabaseManipulationException;
 use App\Repositories\CategoryRepository;
 use App\Repositories\ProductCategoryRepository;
-use Exception;
 
 class ProductCategoryService
 {
@@ -21,14 +20,9 @@ class ProductCategoryService
         $this->productCategoryRepository = $productCategoryRepository;
     }
 
-    public function getAll()
+    public function getAllProductsCategories()
     {
-        return $this->categoryRepository->getAll();
-    }
-
-    public function findById(int $id)
-    {
-        return $this->categoryRepository->findById($id);
+        return $this->productCategoryRepository->getAll();
     }
 
     /**

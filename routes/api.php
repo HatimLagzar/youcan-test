@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\CategoriesController;
 use App\Http\Controllers\Api\ProductsController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/categories', [CategoriesController::class, 'all']);
 
 Route::prefix('/products')
-	->group(function () {
-		Route::get('/', [ProductsController::class, 'all']);
-		Route::post('/', [ProductsController::class, 'store']);
-	});
+    ->group(function () {
+        Route::get('/', [ProductsController::class, 'all']);
+        Route::post('/', [ProductsController::class, 'store']);
+        Route::get('/categories', [CategoriesController::class, 'productsCategories']);
+    });

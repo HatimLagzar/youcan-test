@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\ProductCategory;
+use Illuminate\Support\Collection;
 
 class ProductCategoryRepository
 {
@@ -11,6 +12,11 @@ class ProductCategoryRepository
     public function __construct(ProductCategory $productCategory)
     {
         $this->productCategory = $productCategory;
+    }
+
+    public function getAll(): Collection
+    {
+        return $this->productCategory->all();
     }
 
     public function store(int $categoryId, int $productId)
