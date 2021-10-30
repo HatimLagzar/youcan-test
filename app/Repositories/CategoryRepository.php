@@ -2,9 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\Category;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class CategoryRepository
 {
@@ -15,7 +15,7 @@ class CategoryRepository
             ->get();
     }
 
-    public function findById(int $id): ?Category
+    public function findById(int $id): ?stdClass
     {
         return DB::table('categories')
             ->where('id', '=', $id)
@@ -23,7 +23,7 @@ class CategoryRepository
             ->first();
     }
 
-    public function findByName(string $name): ?Category
+    public function findByName(string $name): ?stdClass
     {
         return DB::table('categories')
             ->where('name', '=', $name)
@@ -31,7 +31,7 @@ class CategoryRepository
             ->first();
     }
 
-    public function create(array $inputs): ?Category
+    public function create(array $inputs): ?stdClass
     {
         $id = DB::table('categories')->insertGetId($inputs);
         return $this->findById($id);

@@ -2,9 +2,9 @@
 
 namespace App\Repositories;
 
-use App\Models\ProductCategory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class ProductCategoryRepository
 {
@@ -13,7 +13,7 @@ class ProductCategoryRepository
         return DB::table('products_categories')->get();
     }
 
-    public function findById(int $id): ?ProductCategory
+    public function findById(int $id): ?stdClass
     {
         return DB::table('products_categories')
             ->where('id', '=', $id)
@@ -21,7 +21,7 @@ class ProductCategoryRepository
             ->first();
     }
 
-    public function store(int $categoryId, int $productId): ?ProductCategory
+    public function store(int $categoryId, int $productId): ?stdClass
     {
         $id = DB::table('products_categories')
             ->insertGetId([

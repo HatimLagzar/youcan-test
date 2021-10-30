@@ -2,10 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class ProductRepository
 {
@@ -21,7 +21,11 @@ class ProductRepository
         return DB::table('products')->paginate(3);
     }
 
-    public function findById(int $id): ?Product
+    /**
+     * @param int $id
+     * @return stdClass|null
+     */
+    public function findById(int $id): ?stdClass
     {
         return DB::table('products')
             ->where('id', '=', $id)
@@ -29,8 +33,11 @@ class ProductRepository
             ->first();
     }
 
-
-    public function findByName(string $name): ?Product
+    /**
+     * @param string $name
+     * @return stdClass|null
+     */
+    public function findByName(string $name): ?stdClass
     {
         return DB::table('products')
             ->where('name', '=', $name)
@@ -38,7 +45,11 @@ class ProductRepository
             ->first();
     }
 
-    public function store(array $inputs): ?Product
+    /**
+     * @param array $inputs
+     * @return stdClass|null
+     */
+    public function store(array $inputs): ?stdClass
     {
         $id = DB::table('products')->insertGetId($inputs);
         return $this->findById($id);

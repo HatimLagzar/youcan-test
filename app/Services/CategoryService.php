@@ -3,10 +3,10 @@
 namespace App\Services;
 
 use App\Exceptions\DatabaseManipulationException;
-use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use App\Repositories\ProductCategoryRepository;
 use Illuminate\Support\Collection;
+use stdClass;
 
 class CategoryService
 {
@@ -27,12 +27,12 @@ class CategoryService
         return $this->categoryRepository->getAll($columns);
     }
 
-    public function findById(int $id): ?Category
+    public function findById(int $id): ?stdClass
     {
         return $this->categoryRepository->findById($id);
     }
 
-    public function findByName(string $name): ?Category
+    public function findByName(string $name): ?stdClass
     {
         return $this->categoryRepository->findByName($name);
     }
@@ -40,7 +40,7 @@ class CategoryService
     /**
      * @throws DatabaseManipulationException
      */
-    public function create(string $name, $parentId): Category
+    public function create(string $name, $parentId): stdClass
     {
         $category = $this->categoryRepository->create([
             'name' => $name,
@@ -54,7 +54,7 @@ class CategoryService
         return $category;
     }
 
-    public function createProductCategory(int $categoryId, int $productId): bool
+    public function createProductCategory(int $categoryId, int $productId): stdClass
     {
         return $this->productCategory->store($categoryId, $productId);
     }

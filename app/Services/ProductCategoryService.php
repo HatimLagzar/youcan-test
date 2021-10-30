@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\DatabaseManipulationException;
 use App\Repositories\CategoryRepository;
 use App\Repositories\ProductCategoryRepository;
+use Illuminate\Support\Collection;
 
 class ProductCategoryService
 {
@@ -20,7 +21,7 @@ class ProductCategoryService
         $this->productCategoryRepository = $productCategoryRepository;
     }
 
-    public function getAllProductsCategories()
+    public function getAllProductsCategories(): Collection
     {
         return $this->productCategoryRepository->getAll();
     }
@@ -28,7 +29,7 @@ class ProductCategoryService
     /**
      * @throws DatabaseManipulationException
      */
-    public function createProductCategories(array $categories, int $productId)
+    public function createProductCategories(array $categories, int $productId): void
     {
         foreach ($categories as $categoryId) {
             $category = $this->categoryRepository->findById($categoryId);
