@@ -17,12 +17,12 @@ class ProductRepository
 
     public function getAll(array $columns = []): Collection
     {
-        return $this->product->with(['categories'])->select(...$columns)->get();
+        return $this->product->select(...$columns)->get();
     }
 
     public function getAllPaginated(): LengthAwarePaginator
     {
-        return $this->product->with(['categories'])->paginate(3);
+        return $this->product->paginate(3);
     }
 
     public function findByName(string $name): ?Product
