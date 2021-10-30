@@ -64,7 +64,7 @@ class ProductService
      * @throws DatabaseManipulationException
      * @throws ValidationException
      */
-    public function create(array $inputs): ?stdClass
+    public function create(array $inputs): stdClass
     {
         $this->productValidator->validate($inputs);
         $inputs = $this->sanitizeInputs($inputs);
