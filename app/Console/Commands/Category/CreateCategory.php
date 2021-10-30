@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands\Category;
 
+use App\Console\Services\InputService;
 use App\Exceptions\DatabaseManipulationException;
 use App\Services\CategoryService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
 
 class CreateCategory extends Command
 {
@@ -25,15 +25,21 @@ class CreateCategory extends Command
 
     protected CategoryService $categoryService;
 
+    protected InputService $inputService;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(CategoryService $categoryService)
+    public function __construct(
+        CategoryService $categoryService,
+        InputService    $inputService
+    )
     {
         parent::__construct();
         $this->categoryService = $categoryService;
+        $this->inputService = $inputService;
     }
 
     /**
@@ -41,31 +47,23 @@ class CreateCategory extends Command
      */
     public function handle(): int
     {
-        $name = null;
-        while (!$name) {
-            $name = filter_var($this->ask('Enter Category Name'), FILTER_SANITIZE_STRING);
-        }
-
-        $choices = ['None', ...Arr::flatten($this->categoryService->getAll(['name'])->toArray())];
+        $name = $this->inputService->ask($this, 'Enter Category Name');
         $parentCategoryName = $this->choice(
             'Select Parent Category ID',
-            $choices,
+            ['None', ...$this->categoryService->getAllNamesAsArray()],
             0
         );
 
-        if ($parentCategoryName === 'None') {
-            $parentCategory = null;
-        } else {
+        if ($parentCategoryName !== 'None') {
             $parentCategory = $this->categoryService->findByName($parentCategoryName);
-        }
-
-        if (!$parentCategory && $parentCategoryName !== 'None') {
-            $this->error('Parent category not found in the database.');
-            return Command::FAILURE;
+            if (!$parentCategory) {
+                $this->error('Parent category not found in the database.');
+                return Command::FAILURE;
+            }
         }
 
         try {
-            $this->categoryService->create($name, $parentCategory ? $parentCategory->id : null);
+            $this->categoryService->create($name, isset($parentCategory) ? $parentCategory->id : null);
             $this->info('Category created successfully.');
             return Command::SUCCESS;
         } catch (DatabaseManipulationException $exception) {

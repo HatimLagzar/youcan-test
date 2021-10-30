@@ -10,7 +10,7 @@ class InputService
     {
         $value = null;
         while (!$value) {
-            $value = $command->ask($label);
+            $value = filter_var($command->ask($label), FILTER_SANITIZE_STRING);
         }
 
         return $value;
@@ -26,14 +26,14 @@ class InputService
         return $value;
     }
 
-    public function askForMultipleChoices(Command $command, string $label, $choices, $default = 0)
+    public function askForChoice(Command $command, string $label, $choices, $default = 0, $multiple = true)
     {
         return $command->choice(
             $label,
             $choices,
             $default,
             null,
-            true
+            $multiple
         );
     }
 }
