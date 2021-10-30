@@ -7,6 +7,7 @@ use App\Exceptions\ImageValidationException;
 use App\Exceptions\ValidationException;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
+use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use stdClass;
@@ -50,7 +51,7 @@ class ProductService
     {
         $inputs['name'] = filter_var($inputs['name'], FILTER_SANITIZE_STRING);
         $inputs['description'] = filter_var($inputs['description'], FILTER_SANITIZE_STRING);
-        $inputs['price'] = filter_var($inputs['price'], FILTER_SANITIZE_NUMBER_FLOAT);
+        $inputs['price'] = filter_var(number_format($inputs['price'], 2), FILTER_SANITIZE_NUMBER_FLOAT);
         $inputs['categories'] = $inputs['categories'] ?? [];
         $inputs['categories'] = filter_var_array($inputs['categories'], FILTER_SANITIZE_NUMBER_INT);
 
@@ -76,7 +77,9 @@ class ProductService
             'name' => $inputs['name'],
             'description' => $inputs['description'],
             'price' => $inputs['price'],
-            'image_src' => $imageSrc
+            'image_src' => $imageSrc,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
 
         if (!$product) {

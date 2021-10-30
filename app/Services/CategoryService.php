@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\DatabaseManipulationException;
 use App\Repositories\CategoryRepository;
 use App\Repositories\ProductCategoryRepository;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use stdClass;
 
@@ -44,7 +45,9 @@ class CategoryService
     {
         $category = $this->categoryRepository->create([
             'name' => $name,
-            'parent_id' => $parentId
+            'parent_id' => $parentId,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
 
         if (!$category) {
