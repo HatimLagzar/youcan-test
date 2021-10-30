@@ -4,26 +4,31 @@ namespace App\Repositories;
 
 use App\Models\ProductCategory;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ProductCategoryRepository
 {
-    protected ProductCategory $productCategory;
-
-    public function __construct(ProductCategory $productCategory)
-    {
-        $this->productCategory = $productCategory;
-    }
-
     public function getAll(): Collection
     {
-        return $this->productCategory->all();
+        return DB::table('products_categories')->get();
     }
 
-    public function store(int $categoryId, int $productId)
+    public function findById(int $id): ?ProductCategory
     {
-        return $this->productCategory->create([
-            'category_id' => $categoryId,
-            'product_id' => $productId,
-        ]);
+        return DB::table('products_categories')
+            ->where('id', '=', $id)
+            ->get()
+            ->first();
+    }
+
+    public function store(int $categoryId, int $productId): ?ProductCategory
+    {
+        $id = DB::table('products_categories')
+            ->insertGetId([
+                'category_id' => $categoryId,
+                'product_id' => $productId,
+            ]);
+
+        return $this->findById($id);
     }
 }

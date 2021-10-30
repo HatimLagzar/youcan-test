@@ -4,33 +4,36 @@ namespace App\Repositories;
 
 use App\Models\Category;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class CategoryRepository
 {
-    protected Category $category;
-
-    public function __construct(Category $category)
-    {
-        $this->category = $category;
-    }
-
     public function getAll(array $columns = []): Collection
     {
-        return $this->category->all(...$columns);
+        return DB::table('categories')
+            ->select(...$columns)
+            ->get();
     }
 
     public function findById(int $id): ?Category
     {
-        return $this->category->find($id);
+        return DB::table('categories')
+            ->where('id', '=', $id)
+            ->get()
+            ->first();
     }
 
     public function findByName(string $name): ?Category
     {
-        return $this->category->where('name', '=', $name)->first();
+        return DB::table('categories')
+            ->where('name', '=', $name)
+            ->get()
+            ->first();
     }
 
-    public function create(array $inputs): Category
+    public function create(array $inputs): ?Category
     {
-        return $this->category->create($inputs);
+        $id = DB::table('categories')->insertGetId($inputs);
+        return $this->findById($id);
     }
 }
