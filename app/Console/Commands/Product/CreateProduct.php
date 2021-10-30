@@ -4,6 +4,7 @@ namespace App\Console\Commands\Product;
 
 use App\Console\Services\CategoryConsoleService;
 use App\Console\Services\InputService;
+use App\Console\Services\ProductConsoleService;
 use App\Console\Services\UploadService;
 use App\Exceptions\DatabaseManipulationException;
 use App\Exceptions\UploadExternalFileException;
@@ -38,6 +39,8 @@ class CreateProduct extends Command
 
     protected CategoryConsoleService $categoryConsoleService;
 
+    protected ProductConsoleService $productConsoleService;
+
     /**
      * Create a new command instance.
      *
@@ -48,7 +51,8 @@ class CreateProduct extends Command
         CategoryService        $categoryService,
         InputService           $inputService,
         UploadService          $uploadService,
-        CategoryConsoleService $categoryConsoleService
+        CategoryConsoleService $categoryConsoleService,
+        ProductConsoleService  $productConsoleService
     )
     {
         parent::__construct();
@@ -57,6 +61,7 @@ class CreateProduct extends Command
         $this->inputService = $inputService;
         $this->uploadService = $uploadService;
         $this->categoryConsoleService = $categoryConsoleService;
+        $this->productConsoleService = $productConsoleService;
     }
 
     /**
@@ -66,29 +71,12 @@ class CreateProduct extends Command
      */
     public function handle(): int
     {
-        $name = $this->inputService->ask($this, 'Enter product name');
-        $description = $this->inputService->ask($this, 'Enter product description');
-        $price = $this->inputService->askForNumber($this, 'Enter product price (Number)');
-        $imageSrc = $this->inputService->ask($this, 'Enter product image, URL or local path');
-
-        $productCategoriesChoices = $this->categoryService->getAllNamesAsArray();
-        if (count($productCategoriesChoices) === 0) {
-            $this->info('0 categories found.');
-        }
-
-        $choices = $this->inputService->askForMultipleChoices($this, 'Select product categories, to use multiple categories use comma (Cat One, Cat Five)...', ['None', ...$productCategoriesChoices]);
-        $choices = $this->categoryConsoleService->getIdsFromNames($choices);
+        $inputs = $this->productConsoleService->askForInptus($this);
+        $inputs['categories'] = $this->categoryConsoleService->getIdsFromNames($inputs['categories']);
 
         try {
-            $imageFile = $this->uploadService->uploadExternalResource($imageSrc);
-            $this->productService->create([
-                'name' => $name,
-                'description' => $description,
-                'price' => floatval($price),
-                'image' => $imageFile,
-                'categories' => $choices ?? null
-            ]);
-
+            $inputs['image'] = $this->uploadService->uploadExternalResource($inputs['imageSrc']);
+            $this->productService->create($inputs);
             $this->info('Product created successfully.');
             return Command::SUCCESS;
         } catch (ValidationException | DatabaseManipulationException $exception) {
