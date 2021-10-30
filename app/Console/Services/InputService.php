@@ -25,4 +25,15 @@ class InputService
 
         return $value;
     }
+
+    public function askForMultipleChoices(Command $command, string $label, $choices, $default = 0)
+    {
+        return $command->choice(
+            $label,
+            $choices,
+            $default,
+            null,
+            true
+        );
+    }
 }

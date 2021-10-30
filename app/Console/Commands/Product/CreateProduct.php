@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\Product;
 
+use App\Console\Services\CategoryConsoleService;
 use App\Console\Services\InputService;
 use App\Console\Services\UploadService;
 use App\Exceptions\DatabaseManipulationException;
@@ -10,7 +11,6 @@ use App\Exceptions\ValidationException;
 use App\Services\CategoryService;
 use App\Services\ProductService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
 
 class CreateProduct extends Command
 {
@@ -36,16 +36,19 @@ class CreateProduct extends Command
 
     protected UploadService $uploadService;
 
+    protected CategoryConsoleService $categoryConsoleService;
+
     /**
      * Create a new command instance.
      *
      * @return void
      */
     public function __construct(
-        ProductService  $productService,
-        CategoryService $categoryService,
-        InputService    $inputService,
-        UploadService   $uploadService
+        ProductService         $productService,
+        CategoryService        $categoryService,
+        InputService           $inputService,
+        UploadService          $uploadService,
+        CategoryConsoleService $categoryConsoleService
     )
     {
         parent::__construct();
@@ -53,6 +56,7 @@ class CreateProduct extends Command
         $this->categoryService = $categoryService;
         $this->inputService = $inputService;
         $this->uploadService = $uploadService;
+        $this->categoryConsoleService = $categoryConsoleService;
     }
 
     /**
@@ -67,37 +71,13 @@ class CreateProduct extends Command
         $price = $this->inputService->askForNumber($this, 'Enter product price (Number)');
         $imageSrc = $this->inputService->ask($this, 'Enter product image, URL or local path');
 
-        $productCategoriesChoices = $this->categoryService
-            ->getAll(['name'])
-            ->transform(function ($category) {
-                return $category->name;
-            })
-            ->toArray();
-
+        $productCategoriesChoices = $this->categoryService->getAllNamesAsArray();
         if (count($productCategoriesChoices) === 0) {
             $this->info('0 categories found.');
         }
 
-        $choices = $this->choice(
-            'Select product categories, to use multiple categories use comma (Cat One, Cat Five)...',
-            ['None', ...$productCategoriesChoices],
-            0,
-            null,
-            true
-        );
-
-        $choices = array_map(function ($choice) {
-            $category = $this->categoryService->findByName($choice);
-            if ($category) {
-                return $category->id;
-            }
-        }, $choices);
-
-        $choices = Arr::where($choices, function ($choice) {
-            if ($choice) {
-                return $choice;
-            }
-        });
+        $choices = $this->inputService->askForMultipleChoices($this, 'Select product categories, to use multiple categories use comma (Cat One, Cat Five)...', ['None', ...$productCategoriesChoices]);
+        $choices = $this->categoryConsoleService->getIdsFromNames($choices);
 
         try {
             $imageFile = $this->uploadService->uploadExternalResource($imageSrc);

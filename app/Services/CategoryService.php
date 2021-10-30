@@ -28,6 +28,15 @@ class CategoryService
         return $this->categoryRepository->getAll($columns);
     }
 
+    public function getAllNamesAsArray(): array
+    {
+        return $this->getAll(['name'])
+            ->transform(function ($category) {
+                return $category->name;
+            })
+            ->toArray();
+    }
+
     public function findById(int $id): ?stdClass
     {
         return $this->categoryRepository->findById($id);
