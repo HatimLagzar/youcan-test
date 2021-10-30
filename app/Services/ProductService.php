@@ -3,13 +3,15 @@
 namespace App\Services;
 
 use App\Exceptions\DatabaseManipulationException;
-use App\Exceptions\ImageValidationException;
 use App\Exceptions\ValidationException;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\File;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use stdClass;
 
 class ProductService
@@ -32,7 +34,7 @@ class ProductService
         $this->productValidator = $productValidator;
     }
 
-    public function getAll(array $columns = []): Collection
+    public function getAll(array $columns = ['*']): Collection
     {
         return $this->productRepository->getAll($columns);
     }
@@ -61,17 +63,12 @@ class ProductService
     /**
      * @throws DatabaseManipulationException
      * @throws ValidationException
-     * @throws ImageValidationException
      */
     public function create(array $inputs): ?stdClass
     {
         $this->productValidator->validate($inputs);
         $inputs = $this->sanitizeInputs($inputs);
-
-        $imageSrc = is_string($inputs['image']) ? $inputs['image'] : $inputs['image']->hashName();
-        if (!is_string($inputs['image'])) {
-            $inputs['image']->storeAs('public/products/', $imageSrc);
-        }
+        $imageSrc = $this->uploadThumbnail($inputs['image']);
 
         $product = $this->productRepository->store([
             'name' => $inputs['name'],
@@ -89,5 +86,27 @@ class ProductService
         $this->productCategoryService->createProductCategories($inputs['categories'], $product->id);
 
         return $product;
+    }
+
+    /**
+     * @param $image UploadedFile|File the file that we want to upload
+     * @return string the uploaded file name
+     */
+    public function uploadThumbnail($image): string
+    {
+        $fileName = $image->hashName();
+        Storage::putFileAs('public/products/', $image, $fileName);
+        $this->deleteTemporaryFile($image);
+        return $fileName;
+    }
+
+    /**
+     * @param $image
+     */
+    public function deleteTemporaryFile($image): void
+    {
+        if (Storage::exists('public/tmp_files/' . $image->getBasename())) {
+            Storage::delete('public/tmp_files/' . $image->getBasename());
+        }
     }
 }

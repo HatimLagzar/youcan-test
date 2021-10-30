@@ -9,10 +9,10 @@ use stdClass;
 
 class ProductRepository
 {
-    public function getAll(array $columns = []): Collection
+    public function getAll(array $columns = ['*']): Collection
     {
         return DB::table('products')
-            ->select(...$columns)
+            ->select($columns)
             ->get();
     }
 

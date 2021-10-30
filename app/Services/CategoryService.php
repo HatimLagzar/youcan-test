@@ -23,7 +23,7 @@ class CategoryService
         $this->productCategory = $productCategoryRepository;
     }
 
-    public function getAll(array $columns = []): Collection
+    public function getAll(array $columns = ['*']): Collection
     {
         return $this->categoryRepository->getAll($columns);
     }

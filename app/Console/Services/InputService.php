@@ -2,23 +2,25 @@
 
 namespace App\Console\Services;
 
+use Illuminate\Console\Command;
+
 class InputService
 {
-    public function ask(string $label): string
+    public function ask(Command $command, string $label): string
     {
         $value = null;
         while (!$value) {
-            $value = $this->ask($label);
+            $value = $command->ask($label);
         }
 
         return $value;
     }
 
-    public function askForNumber(string $label)
+    public function askForNumber(Command $command, string $label)
     {
         $value = null;
         while (!$value || !is_numeric($value)) {
-            $value = $this->ask($label);
+            $value = $command->ask($label);
         }
 
         return $value;

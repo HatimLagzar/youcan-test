@@ -3,8 +3,9 @@
 namespace App\Console\Commands\Product;
 
 use App\Console\Services\InputService;
+use App\Console\Services\UploadService;
 use App\Exceptions\DatabaseManipulationException;
-use App\Exceptions\ImageValidationException;
+use App\Exceptions\UploadExternalFileException;
 use App\Exceptions\ValidationException;
 use App\Services\CategoryService;
 use App\Services\ProductService;
@@ -33,6 +34,8 @@ class CreateProduct extends Command
 
     protected InputService $inputService;
 
+    protected UploadService $uploadService;
+
     /**
      * Create a new command instance.
      *
@@ -41,13 +44,15 @@ class CreateProduct extends Command
     public function __construct(
         ProductService  $productService,
         CategoryService $categoryService,
-        InputService    $inputService
+        InputService    $inputService,
+        UploadService   $uploadService
     )
     {
         parent::__construct();
         $this->productService = $productService;
         $this->categoryService = $categoryService;
         $this->inputService = $inputService;
+        $this->uploadService = $uploadService;
     }
 
     /**
@@ -57,23 +62,25 @@ class CreateProduct extends Command
      */
     public function handle(): int
     {
-        $name = $this->inputService->ask('Enter product name');
-        $description = $this->inputService->ask('Enter product description');
-        $price = $this->inputService->askForNumber('Enter product price (Number)');
-        $imageSrc = $this->inputService->ask('Enter product image, URL or local path');
+        $name = $this->inputService->ask($this, 'Enter product name');
+        $description = $this->inputService->ask($this, 'Enter product description');
+        $price = $this->inputService->askForNumber($this, 'Enter product price (Number)');
+        $imageSrc = $this->inputService->ask($this, 'Enter product image, URL or local path');
 
         $productCategoriesChoices = $this->categoryService
             ->getAll(['name'])
+            ->transform(function ($category) {
+                return $category->name;
+            })
             ->toArray();
 
         if (count($productCategoriesChoices) === 0) {
             $this->info('0 categories found.');
         }
 
-        $productCategoriesChoices = ['None', ...Arr::flatten($productCategoriesChoices)];
         $choices = $this->choice(
             'Select product categories, to use multiple categories use comma (Cat One, Cat Five)...',
-            $productCategoriesChoices,
+            ['None', ...$productCategoriesChoices],
             0,
             null,
             true
@@ -93,17 +100,25 @@ class CreateProduct extends Command
         });
 
         try {
+            $imageFile = $this->uploadService->uploadExternalResource($imageSrc);
             $this->productService->create([
                 'name' => $name,
                 'description' => $description,
                 'price' => floatval($price),
-                'image' => $imageSrc,
+                'image' => $imageFile,
                 'categories' => $choices ?? null
             ]);
 
             $this->info('Product created successfully.');
             return Command::SUCCESS;
-        } catch (ValidationException | ImageValidationException | DatabaseManipulationException $exception) {
+        } catch (ValidationException | DatabaseManipulationException $exception) {
+            $this->error($exception->getMessage());
+            return Command::FAILURE;
+        } catch (UploadExternalFileException $exception) {
+            if (isset($imageFile) && !empty($imageFile)) {
+                $this->productService->deleteTemporaryFile($imageFile);
+            }
+
             $this->error($exception->getMessage());
             return Command::FAILURE;
         }

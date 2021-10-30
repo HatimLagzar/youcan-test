@@ -14,10 +14,10 @@ class CategoryRepository
      * @param array $columns price what columns you want to retrive, empty equivalent to *
      * @return Collection
      */
-    public function getAll(array $columns = []): Collection
+    public function getAll(array $columns = ['*']): Collection
     {
         return DB::table('categories')
-            ->select(...$columns)
+            ->select($columns)
             ->get();
     }
 
