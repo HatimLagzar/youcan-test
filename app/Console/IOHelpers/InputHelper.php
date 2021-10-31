@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Console\Services;
+namespace App\Console\IOHelpers;
 
 use Illuminate\Console\Command;
 
-class InputService
+class InputHelper
 {
     public function ask(Command $command, string $label): string
     {
@@ -24,16 +24,5 @@ class InputService
         }
 
         return $value;
-    }
-
-    public function askForChoice(Command $command, string $label, $choices, $default = 0, $multiple = true)
-    {
-        return $command->choice(
-            $label,
-            $choices,
-            $default,
-            null,
-            $multiple
-        );
     }
 }
