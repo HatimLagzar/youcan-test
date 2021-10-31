@@ -42,21 +42,7 @@ class DeleteProduct extends Command
      */
     public function handle(): int
     {
-        $products = $this->productService->getAll(['id', 'name', 'price'])->toArray();
-        $products = array_map(function ($product) {
-            return [
-                'id' => $product['id'],
-                'name' => $product['name'],
-                'price' => $product['price']
-            ];
-        }, $products);
-
-        $this->table(
-            ['ID', 'Name', 'Price'],
-            $products
-        );
-
-        $choices = Arr::flatten($this->productService->getAll(['name'])->toArray());
+        $choices = Arr::flatten($this->productService->getAllNamesAsArray());
         if (count($choices) === 0) {
             $this->info('0 products found.');
             return Command::FAILURE;
@@ -73,7 +59,7 @@ class DeleteProduct extends Command
             return Command::FAILURE;
         }
 
-        if ($product->delete()) {
+        if ($this->productService->delete($product->id)) {
             $this->info('Product deleted successfully.');
             return Command::SUCCESS;
         } else {

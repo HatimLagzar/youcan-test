@@ -39,6 +39,14 @@ class ProductService
         return $this->productRepository->getAll($columns);
     }
 
+    public function getAllNamesAsArray(): array
+    {
+        return $this->productRepository->getAll(['name'])
+            ->transform(function ($product) {
+                return $product->name;
+            })->toArray();
+    }
+
     public function getAllPaginated(): LengthAwarePaginator
     {
         return $this->productRepository->getAllPaginated();
@@ -108,5 +116,10 @@ class ProductService
         if (Storage::exists('public/tmp_files/' . $image->getBasename())) {
             Storage::delete('public/tmp_files/' . $image->getBasename());
         }
+    }
+
+    public function delete(int $id): bool
+    {
+        return $this->productRepository->delete($id) > 0;
     }
 }

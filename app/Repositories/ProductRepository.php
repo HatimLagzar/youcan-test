@@ -54,4 +54,9 @@ class ProductRepository
         $id = DB::table('products')->insertGetId($inputs);
         return $this->findById($id);
     }
+
+    public function delete(int $id): int
+    {
+        return DB::table('products')->delete($id);
+    }
 }
