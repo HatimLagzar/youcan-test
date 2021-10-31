@@ -4,7 +4,6 @@ namespace App\Console\Commands\Category;
 
 use App\Services\CategoryService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
 
 class DeleteCategory extends Command
 {
@@ -42,26 +41,17 @@ class DeleteCategory extends Command
      */
     public function handle(): int
     {
-        $this->table(
-            ['ID', 'Name', 'Parent'],
-            $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
-        );
-
-        $choices = Arr::flatten($this->categoryService->getAll(['name'])->toArray());
-        $categoryName = $this->choice('Select Category ID to be deleted', $choices);
+        $choices = $this->categoryService->getAllNamesAsArray();
+        $categoryName = $this->choice('Select Category to be deleted', $choices);
         $category = $this->categoryService->findByName($categoryName);
 
-        if (! $category) {
+        if (!$category) {
             $this->error('Category not found.');
             return Command::FAILURE;
         }
 
-        if ($category->delete()) {
+        if ($this->categoryService->delete($category->id)) {
             $this->info('Category deleted successfully.');
-            $this->table(
-                ['ID', 'Name', 'Parent'],
-                $this->categoryService->getAll(['id', 'name', 'parent_id'])->toArray()
-            );
             return Command::SUCCESS;
         } else {
             $this->error('Unknown error occured while deleting the category, please retry later.');
