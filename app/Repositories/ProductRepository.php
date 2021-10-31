@@ -47,12 +47,11 @@ class ProductRepository
 
     /**
      * @param array $inputs
-     * @return stdClass|null
+     * @return int|null
      */
-    public function store(array $inputs): ?stdClass
+    public function create(array $inputs): ?int
     {
-        $id = DB::table('products')->insertGetId($inputs);
-        return $this->findById($id);
+        return DB::table('products')->insertGetId($inputs);
     }
 
     public function delete(int $id): int
