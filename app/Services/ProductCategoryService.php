@@ -34,12 +34,12 @@ class ProductCategoryService
         foreach ($categories as $categoryId) {
             $category = $this->categoryRepository->findById($categoryId);
             if ($category) {
-                $productCategory = $this->productCategoryRepository->store(
+                $productCategoryId = $this->productCategoryRepository->create(
                     $category->id,
                     $productId
                 );
 
-                if (!$productCategory) {
+                if (!$productCategoryId) {
                     throw new DatabaseManipulationException('Unknown error occurred while saving categories, retry later or contact the support.');
                 }
             }

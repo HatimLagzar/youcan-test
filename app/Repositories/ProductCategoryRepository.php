@@ -21,14 +21,12 @@ class ProductCategoryRepository
             ->first();
     }
 
-    public function store(int $categoryId, int $productId): ?stdClass
+    public function create(int $categoryId, int $productId): ?int
     {
-        $id = DB::table('products_categories')
+        return DB::table('products_categories')
             ->insertGetId([
                 'category_id' => $categoryId,
                 'product_id' => $productId,
             ]);
-
-        return $this->findById($id);
     }
 }

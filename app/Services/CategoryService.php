@@ -62,11 +62,6 @@ class CategoryService
         return $this->findById($categoryId);
     }
 
-    public function createProductCategory(int $categoryId, int $productId): stdClass
-    {
-        return $this->productCategory->store($categoryId, $productId);
-    }
-
     /**
      * @param array $categoriesNames
      * @return array
