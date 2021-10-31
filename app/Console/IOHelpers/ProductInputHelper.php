@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Console\Services;
+namespace App\Console\IOHelpers;
 
 use Illuminate\Console\Command;
 
-class ProductInputService
+class ProductInputHelper
 {
-    protected InputService $inputService;
+    protected InputHelper $inputService;
 
-    public function __construct(InputService $inputService)
+    public function __construct(InputHelper $inputService)
     {
         $this->inputService = $inputService;
     }
@@ -30,7 +30,7 @@ class ProductInputService
      * @param $productCategoriesChoices
      * @return array
      */
-    public function askForProductCategories(Command $command, $productCategoriesChoices): array
+    private function askForProductCategories(Command $command, $productCategoriesChoices): array
     {
         if (count($productCategoriesChoices) === 0) {
             $command->info('0 categories found.');
