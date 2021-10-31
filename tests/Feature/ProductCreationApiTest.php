@@ -3,12 +3,13 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class ProductCreationApiTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic feature test example.
      *
@@ -18,7 +19,7 @@ class ProductCreationApiTest extends TestCase
     {
         $response = $this->post('/api/products');
         $response->assertJsonFragment([
-            'status' => 400    
+            'status' => 400
         ]);
 
         $response = $this->post('/api/products', [

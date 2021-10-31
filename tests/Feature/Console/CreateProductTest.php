@@ -4,11 +4,13 @@ namespace Tests\Feature\Console;
 
 use App\Models\Category;
 use Illuminate\Console\Command;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
 use Tests\TestCase;
 
 class CreateProductTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * A basic feature test example.
      *
