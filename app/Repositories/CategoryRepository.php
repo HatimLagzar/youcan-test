@@ -53,12 +53,11 @@ class CategoryRepository
      * Create a category
      *
      * @param array $inputs the values of the category we want to create
-     * @return stdClass|null
+     * @return int|null
      */
-    public function create(array $inputs): ?stdClass
+    public function create(array $inputs): ?int
     {
-        $id = DB::table('categories')->insertGetId($inputs);
-        return $this->findById($id);
+        return DB::table('categories')->insertGetId($inputs);
     }
 
     public function delete(int $id): int

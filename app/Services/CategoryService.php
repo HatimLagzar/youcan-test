@@ -46,20 +46,20 @@ class CategoryService
     /**
      * @throws DatabaseManipulationException
      */
-    public function create(string $name, $parentId = null): stdClass
+    public function create(string $name, $parentId = null): ?stdClass
     {
-        $category = $this->categoryRepository->create([
+        $categoryId = $this->categoryRepository->create([
             'name' => $name,
             'parent_id' => $parentId,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
 
-        if (!$category) {
+        if (!$categoryId) {
             throw new DatabaseManipulationException('Unknown error occured while creating a category.');
         }
 
-        return $category;
+        return $this->findById($categoryId);
     }
 
     public function createProductCategory(int $categoryId, int $productId): stdClass
@@ -90,5 +90,10 @@ class CategoryService
     public function delete(int $categoryId): bool
     {
         return $this->categoryRepository->delete($categoryId) > 0;
+    }
+
+    private function findById(int $categoryId): ?stdClass
+    {
+        return $this->categoryRepository->findById($categoryId);
     }
 }
