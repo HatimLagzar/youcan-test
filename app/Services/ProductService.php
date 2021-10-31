@@ -78,7 +78,7 @@ class ProductService
         $inputs = $this->sanitizeInputs($inputs);
         $imageSrc = $this->uploadThumbnail($inputs['image']);
 
-        $product = $this->productRepository->store([
+        $productId = $this->productRepository->create([
             'name' => $inputs['name'],
             'description' => $inputs['description'],
             'price' => $inputs['price'],
@@ -86,14 +86,12 @@ class ProductService
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
-
-        if (!$product) {
+        if (!$productId) {
             throw new DatabaseManipulationException('Unknown error occurred while saving the product.');
         }
 
-        $this->productCategoryService->createProductCategories($inputs['categories'], $product->id);
-
-        return $product;
+        $this->productCategoryService->createProductCategories($inputs['categories'], $productId);
+        return $this->findById($productId);
     }
 
     /**
@@ -121,5 +119,10 @@ class ProductService
     public function delete(int $id): bool
     {
         return $this->productRepository->delete($id) > 0;
+    }
+
+    private function findById(int $productId): ?stdClass
+    {
+        return $this->productRepository->findById($productId);
     }
 }
