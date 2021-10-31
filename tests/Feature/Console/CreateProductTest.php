@@ -1,13 +1,13 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Console;
 
 use App\Models\Category;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Tests\TestCase;
 
-class ProductCreationConsoleTest extends TestCase
+class CreateProductTest extends TestCase
 {
     /**
      * A basic feature test example.
