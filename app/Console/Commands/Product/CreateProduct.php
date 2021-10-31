@@ -67,6 +67,10 @@ class CreateProduct extends Command
     public function handle(): int
     {
         $productCategoriesChoices = $this->categoryService->getAllNamesAsArray();
+        if (count($productCategoriesChoices) === 0) {
+            $this->info('0 categories found.');
+        }
+
         $inputs = $this->productInputHelper->askForInptus($this, $productCategoriesChoices);
         $inputs['categories'] = $this->categoryService->getIdsFromNames($inputs['categories']);
 

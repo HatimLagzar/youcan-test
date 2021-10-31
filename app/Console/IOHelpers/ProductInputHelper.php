@@ -32,9 +32,6 @@ class ProductInputHelper
      */
     private function askForProductCategories(Command $command, $productCategoriesChoices): array
     {
-        if (count($productCategoriesChoices) === 0) {
-            $command->info('0 categories found.');
-        }
         return $command->choice(
             'Select product categories, to use multiple categories use comma (Cat One, Cat Five)...',
             ['None', ...$productCategoriesChoices],
