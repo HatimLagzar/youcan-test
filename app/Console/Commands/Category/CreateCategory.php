@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Category;
 
-use App\Console\Services\InputService;
+use App\Console\IOHelpers\InputHelper;
 use App\Exceptions\DatabaseManipulationException;
 use App\Services\CategoryService;
 use Illuminate\Console\Command;
@@ -25,7 +25,7 @@ class CreateCategory extends Command
 
     protected CategoryService $categoryService;
 
-    protected InputService $inputService;
+    protected InputHelper $inputHelper;
 
     /**
      * Create a new command instance.
@@ -34,12 +34,12 @@ class CreateCategory extends Command
      */
     public function __construct(
         CategoryService $categoryService,
-        InputService    $inputService
+        InputHelper $inputHelper
     )
     {
         parent::__construct();
         $this->categoryService = $categoryService;
-        $this->inputService = $inputService;
+        $this->inputHelper = $inputHelper;
     }
 
     /**
@@ -47,7 +47,7 @@ class CreateCategory extends Command
      */
     public function handle(): int
     {
-        $name = $this->inputService->ask($this, 'Enter Category Name');
+        $name = $this->inputHelper->ask($this, 'Enter Category Name');
         $parentCategoryName = $this->choice(
             'Select Parent Category ID',
             ['None', ...$this->categoryService->getAllNamesAsArray()],

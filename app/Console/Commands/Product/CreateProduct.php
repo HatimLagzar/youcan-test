@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands\Product;
 
-use App\Console\Services\InputService;
-use App\Console\Services\ProductInputService;
+use App\Console\IOHelpers\InputHelper;
+use App\Console\IOHelpers\ProductInputHelper;
 use App\Console\Services\UploadService;
 use App\Exceptions\DatabaseManipulationException;
 use App\Exceptions\UploadExternalFileException;
@@ -32,11 +32,11 @@ class CreateProduct extends Command
 
     protected CategoryService $categoryService;
 
-    protected InputService $inputService;
+    protected InputHelper $inputHelper;
 
     protected UploadService $uploadService;
 
-    protected ProductInputService $productInputService;
+    protected ProductInputHelper $productInputHelper;
 
     /**
      * Create a new command instance.
@@ -44,19 +44,19 @@ class CreateProduct extends Command
      * @return void
      */
     public function __construct(
-        ProductService      $productService,
-        CategoryService     $categoryService,
-        InputService        $inputService,
-        UploadService       $uploadService,
-        ProductInputService $productInputService
+        ProductService     $productService,
+        CategoryService    $categoryService,
+        InputHelper        $inputHelper,
+        UploadService      $uploadService,
+        ProductInputHelper $productInputHelper
     )
     {
         parent::__construct();
         $this->productService = $productService;
         $this->categoryService = $categoryService;
-        $this->inputService = $inputService;
+        $this->inputHelper = $inputHelper;
         $this->uploadService = $uploadService;
-        $this->productInputService = $productInputService;
+        $this->productInputHelper = $productInputHelper;
     }
 
     /**
@@ -67,7 +67,7 @@ class CreateProduct extends Command
     public function handle(): int
     {
         $productCategoriesChoices = $this->categoryService->getAllNamesAsArray();
-        $inputs = $this->productInputService->askForInptus($this, $productCategoriesChoices);
+        $inputs = $this->productInputHelper->askForInptus($this, $productCategoriesChoices);
         $inputs['categories'] = $this->categoryService->getIdsFromNames($inputs['categories']);
 
         try {
