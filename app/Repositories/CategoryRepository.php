@@ -60,4 +60,10 @@ class CategoryRepository
         $id = DB::table('categories')->insertGetId($inputs);
         return $this->findById($id);
     }
+
+    public function delete(int $id): bool
+    {
+        $nbOfDeletedRows = DB::table('categories')->delete($id);
+        return $nbOfDeletedRows > 0;
+    }
 }

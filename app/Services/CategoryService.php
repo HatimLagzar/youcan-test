@@ -51,7 +51,7 @@ class CategoryService
     /**
      * @throws DatabaseManipulationException
      */
-    public function create(string $name, $parentId): stdClass
+    public function create(string $name, $parentId = null): stdClass
     {
         $category = $this->categoryRepository->create([
             'name' => $name,
@@ -90,5 +90,10 @@ class CategoryService
         return Arr::where($categoriesIds, function ($id) {
             return !empty($id);
         });
+    }
+
+    public function delete(int $categoryId): bool
+    {
+        return $this->categoryRepository->delete($categoryId);
     }
 }
