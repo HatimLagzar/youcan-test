@@ -61,9 +61,8 @@ class CategoryRepository
         return $this->findById($id);
     }
 
-    public function delete(int $id): bool
+    public function delete(int $id): int
     {
-        $nbOfDeletedRows = DB::table('categories')->delete($id);
-        return $nbOfDeletedRows > 0;
+        return DB::table('categories')->delete($id);
     }
 }

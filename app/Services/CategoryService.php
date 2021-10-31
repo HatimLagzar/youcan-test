@@ -94,6 +94,6 @@ class CategoryService
 
     public function delete(int $categoryId): bool
     {
-        return $this->categoryRepository->delete($categoryId);
+        return $this->categoryRepository->delete($categoryId) > 0;
     }
 }
