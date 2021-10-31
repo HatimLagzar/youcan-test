@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands\Product;
 
-use App\Console\Services\CategoryConsoleService;
 use App\Console\Services\InputService;
-use App\Console\Services\ProductConsoleService;
+use App\Console\Services\ProductInputService;
 use App\Console\Services\UploadService;
 use App\Exceptions\DatabaseManipulationException;
 use App\Exceptions\UploadExternalFileException;
@@ -37,9 +36,7 @@ class CreateProduct extends Command
 
     protected UploadService $uploadService;
 
-    protected CategoryConsoleService $categoryConsoleService;
-
-    protected ProductConsoleService $productConsoleService;
+    protected ProductInputService $productConsoleService;
 
     /**
      * Create a new command instance.
@@ -47,12 +44,11 @@ class CreateProduct extends Command
      * @return void
      */
     public function __construct(
-        ProductService         $productService,
-        CategoryService        $categoryService,
-        InputService           $inputService,
-        UploadService          $uploadService,
-        CategoryConsoleService $categoryConsoleService,
-        ProductConsoleService  $productConsoleService
+        ProductService      $productService,
+        CategoryService     $categoryService,
+        InputService        $inputService,
+        UploadService       $uploadService,
+        ProductInputService $productConsoleService
     )
     {
         parent::__construct();
@@ -60,7 +56,6 @@ class CreateProduct extends Command
         $this->categoryService = $categoryService;
         $this->inputService = $inputService;
         $this->uploadService = $uploadService;
-        $this->categoryConsoleService = $categoryConsoleService;
         $this->productConsoleService = $productConsoleService;
     }
 
@@ -72,7 +67,7 @@ class CreateProduct extends Command
     public function handle(): int
     {
         $inputs = $this->productConsoleService->askForInptus($this);
-        $inputs['categories'] = $this->categoryConsoleService->getIdsFromNames($inputs['categories']);
+        $inputs['categories'] = $this->categoryService->getIdsFromNames($inputs['categories']);
 
         try {
             $inputs['image'] = $this->uploadService->uploadExternalResource($inputs['imageSrc']);

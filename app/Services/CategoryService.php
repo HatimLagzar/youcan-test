@@ -6,6 +6,7 @@ use App\Exceptions\DatabaseManipulationException;
 use App\Repositories\CategoryRepository;
 use App\Repositories\ProductCategoryRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use stdClass;
 
@@ -69,5 +70,25 @@ class CategoryService
     public function createProductCategory(int $categoryId, int $productId): stdClass
     {
         return $this->productCategory->store($categoryId, $productId);
+    }
+
+    /**
+     * @param array $categoriesNames
+     * @return array
+     */
+    public function getIdsFromNames(array $categoriesNames): array
+    {
+        $categoriesIds = array_map(function ($name) {
+            $category = $this->categoryRepository->findByName($name);
+            if ($category) {
+                return $category->id;
+            }
+
+            return null;
+        }, $categoriesNames);
+
+        return Arr::where($categoriesIds, function ($id) {
+            return !empty($id);
+        });
     }
 }

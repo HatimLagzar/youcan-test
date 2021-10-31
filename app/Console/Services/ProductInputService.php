@@ -5,7 +5,7 @@ namespace App\Console\Services;
 use App\Services\CategoryService;
 use Illuminate\Console\Command;
 
-class ProductConsoleService
+class ProductInputService
 {
     protected InputService $inputService;
     protected CategoryService $categoryService;
