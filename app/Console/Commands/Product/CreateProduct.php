@@ -36,7 +36,7 @@ class CreateProduct extends Command
 
     protected UploadService $uploadService;
 
-    protected ProductInputService $productConsoleService;
+    protected ProductInputService $productInputService;
 
     /**
      * Create a new command instance.
@@ -48,7 +48,7 @@ class CreateProduct extends Command
         CategoryService     $categoryService,
         InputService        $inputService,
         UploadService       $uploadService,
-        ProductInputService $productConsoleService
+        ProductInputService $productInputService
     )
     {
         parent::__construct();
@@ -56,7 +56,7 @@ class CreateProduct extends Command
         $this->categoryService = $categoryService;
         $this->inputService = $inputService;
         $this->uploadService = $uploadService;
-        $this->productConsoleService = $productConsoleService;
+        $this->productInputService = $productInputService;
     }
 
     /**
@@ -66,7 +66,8 @@ class CreateProduct extends Command
      */
     public function handle(): int
     {
-        $inputs = $this->productConsoleService->askForInptus($this);
+        $productCategoriesChoices = $this->categoryService->getAllNamesAsArray();
+        $inputs = $this->productInputService->askForInptus($this, $productCategoriesChoices);
         $inputs['categories'] = $this->categoryService->getIdsFromNames($inputs['categories']);
 
         try {

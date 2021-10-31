@@ -2,24 +2,18 @@
 
 namespace App\Console\Services;
 
-use App\Services\CategoryService;
 use Illuminate\Console\Command;
 
 class ProductInputService
 {
     protected InputService $inputService;
-    protected CategoryService $categoryService;
 
-    public function __construct(
-        InputService    $inputService,
-        CategoryService $categoryService
-    )
+    public function __construct(InputService $inputService)
     {
         $this->inputService = $inputService;
-        $this->categoryService = $categoryService;
     }
 
-    public function askForInptus(Command $command): array
+    public function askForInptus(Command $command, $productCategoriesChoices): array
     {
         $inputs = [];
         $inputs['name'] = $this->inputService->ask($command, 'Enter product name');
@@ -27,17 +21,17 @@ class ProductInputService
         $inputs['price'] = $this->inputService->askForNumber($command, 'Enter product price (Number)');
         $inputs['price'] = floatval($inputs['price']);
         $inputs['imageSrc'] = $this->inputService->ask($command, 'Enter product image, URL or local path');
-        $inputs['categories'] = $this->askForProductCategories($command);
+        $inputs['categories'] = $this->askForProductCategories($command, $productCategoriesChoices);
         return $inputs;
     }
 
     /**
      * @param Command $command
+     * @param $productCategoriesChoices
      * @return array
      */
-    public function askForProductCategories(Command $command): array
+    public function askForProductCategories(Command $command, $productCategoriesChoices): array
     {
-        $productCategoriesChoices = $this->categoryService->getAllNamesAsArray();
         if (count($productCategoriesChoices) === 0) {
             $command->info('0 categories found.');
         }
