@@ -38,11 +38,6 @@ class CategoryService
             ->toArray();
     }
 
-    public function findById(int $id): ?stdClass
-    {
-        return $this->categoryRepository->findById($id);
-    }
-
     public function findByName(string $name): ?stdClass
     {
         return $this->categoryRepository->findByName($name);
