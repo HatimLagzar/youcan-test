@@ -5,6 +5,7 @@ namespace App\Console\Commands\Category;
 use App\Console\IOHelpers\InputHelper;
 use App\Exceptions\DatabaseManipulationException;
 use App\Services\CategoryService;
+use Exception;
 use Illuminate\Console\Command;
 
 class CreateCategory extends Command
@@ -68,7 +69,7 @@ class CreateCategory extends Command
             $this->info('Category created successfully.');
 
             return Command::SUCCESS;
-        } catch (DatabaseManipulationException $exception) {
+        } catch (DatabaseManipulationException | Exception $exception) {
             $this->error($exception->getMessage());
 
             return Command::FAILURE;

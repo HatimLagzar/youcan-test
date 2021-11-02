@@ -10,6 +10,7 @@ use App\Exceptions\UploadExternalFileException;
 use App\Exceptions\ValidationException;
 use App\Services\CategoryService;
 use App\Services\ProductService;
+use Exception;
 use Illuminate\Console\Command;
 
 class CreateProduct extends Command
@@ -80,15 +81,15 @@ class CreateProduct extends Command
             $this->info('Product created successfully.');
 
             return Command::SUCCESS;
-        } catch (ValidationException | DatabaseManipulationException $exception) {
-            $this->error($exception->getMessage());
-
-            return Command::FAILURE;
         } catch (UploadExternalFileException $exception) {
             $this->error($exception->getMessage());
             if (isset($imageFile) && !empty($imageFile)) {
                 $this->productService->deleteTemporaryFile($imageFile);
             }
+
+            return Command::FAILURE;
+        } catch (ValidationException | DatabaseManipulationException | Exception $exception) {
+            $this->error($exception->getMessage());
 
             return Command::FAILURE;
         }

@@ -6,6 +6,7 @@ use App\Exceptions\DatabaseManipulationException;
 use App\Exceptions\ValidationException;
 use App\Http\Controllers\Controller;
 use App\Services\ProductService;
+use Exception;
 use Illuminate\Http\Request;
 
 class ProductsController extends Controller
@@ -35,7 +36,7 @@ class ProductsController extends Controller
                 'msg' => 'Product created successfully.',
                 'product' => $product
             ]);
-        } catch (ValidationException | DatabaseManipulationException $exception) {
+        } catch (ValidationException | DatabaseManipulationException | Exception $exception) {
             return response([
                 'status' => $exception->getCode(),
                 'msg' => $exception->getMessage()
