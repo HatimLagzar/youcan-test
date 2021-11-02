@@ -4,7 +4,6 @@ namespace App\Console\Services;
 
 use App\Exceptions\UploadExternalFileException;
 use Illuminate\Http\File;
-use Illuminate\Support\Facades\Storage;
 
 class UploadService
 {
@@ -29,16 +28,17 @@ class UploadService
             throw new UploadExternalFileException('Invalid URL');
         }
 
-        if (!Storage::exists('public/tmp_files/')) {
-            Storage::makeDirectory('public/tmp_files');
+        $path = public_path('storage/tmp_files/');
+        if (!is_dir($path)) {
+            mkdir($path);
         }
 
-        $pathToFile = 'public/tmp_files/' . $fileName;
-        $isUploaded = Storage::put($pathToFile, $content);
+        $pathToFile = 'storage/tmp_files/' . $fileName;
+        $isUploaded = file_put_contents(public_path($pathToFile), $content);
         if (!$isUploaded) {
             throw new UploadExternalFileException('Unknown error occurred while uploading the external file.');
         }
 
-        return new File(storage_path() . '/app/' . $pathToFile, $fileName);
+        return new File(storage_path() . '/app/public/tmp_files/' . $fileName, $fileName);
     }
 }

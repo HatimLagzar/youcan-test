@@ -12,7 +12,6 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 
 class ProductService
 {
@@ -102,7 +101,8 @@ class ProductService
     public function uploadThumbnail($image): string
     {
         $fileName = $image->hashName();
-        Storage::putFileAs('public/products/', $image, $fileName);
+        $path = public_path('storage/products/' . $fileName);
+        file_put_contents($path, $image->getContent());
         $this->deleteTemporaryFile($image);
 
         return $fileName;
@@ -113,8 +113,9 @@ class ProductService
      */
     public function deleteTemporaryFile($image): void
     {
-        if (Storage::exists('public/tmp_files/' . $image->getBasename())) {
-            Storage::delete('public/tmp_files/' . $image->getBasename());
+        $path = public_path('storage/tmp_files/' . $image->getBasename());
+        if (file_exists($path)) {
+            unlink($path);
         }
     }
 
