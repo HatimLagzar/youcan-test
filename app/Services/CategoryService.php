@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Exceptions\DatabaseManipulationException;
+use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use App\Repositories\ProductCategoryRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use stdClass;
 
 class CategoryService
 {
@@ -38,7 +38,7 @@ class CategoryService
             ->toArray();
     }
 
-    public function findByName(string $name): ?stdClass
+    public function findByName(string $name): ?Category
     {
         return $this->categoryRepository->findByName($name);
     }
@@ -46,20 +46,20 @@ class CategoryService
     /**
      * @throws DatabaseManipulationException
      */
-    public function create(string $name, $parentId = null): ?stdClass
+    public function create(string $name, $parentId = null): ?Category
     {
-        $categoryId = $this->categoryRepository->create([
+        $category = $this->categoryRepository->create([
             'name' => $name,
             'parent_id' => $parentId,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
 
-        if (!$categoryId) {
+        if (!$category) {
             throw new DatabaseManipulationException('Unknown error occured while creating a category.');
         }
 
-        return $this->findById($categoryId);
+        return $category;
     }
 
     /**
@@ -85,10 +85,5 @@ class CategoryService
     public function delete(int $categoryId): bool
     {
         return $this->categoryRepository->delete($categoryId) > 0;
-    }
-
-    private function findById(int $categoryId): ?stdClass
-    {
-        return $this->categoryRepository->findById($categoryId);
     }
 }

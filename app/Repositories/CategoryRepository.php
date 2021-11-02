@@ -2,9 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Models\Category;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use stdClass;
 
 class CategoryRepository
 {
@@ -16,21 +15,18 @@ class CategoryRepository
      */
     public function getAll(array $columns = ['*']): Collection
     {
-        return DB::table('categories')
-            ->select($columns)
-            ->get();
+        return Category::all($columns);
     }
 
     /**
      * Search for a category by id and return the found category
      *
      * @param int $id the id of the category we're looking for
-     * @return stdClass|null
+     * @return Category|null
      */
-    public function findById(int $id): ?stdClass
+    public function findById(int $id): ?Category
     {
-        return DB::table('categories')
-            ->where('id', '=', $id)
+        return Category::where('id', '=', $id)
             ->get()
             ->first();
     }
@@ -39,12 +35,11 @@ class CategoryRepository
      * Search for a category by name and return the found category
      *
      * @param string $name the name of the category we're looking for
-     * @return stdClass|null
+     * @return Category|null
      */
-    public function findByName(string $name): ?stdClass
+    public function findByName(string $name): ?Category
     {
-        return DB::table('categories')
-            ->where('name', '=', $name)
+        return Category::where('name', '=', $name)
             ->get()
             ->first();
     }
@@ -53,15 +48,15 @@ class CategoryRepository
      * Create a category
      *
      * @param array $inputs the values of the category we want to create
-     * @return int|null
+     * @return Category|null
      */
-    public function create(array $inputs): ?int
+    public function create(array $inputs): ?Category
     {
-        return DB::table('categories')->insertGetId($inputs);
+        return Category::create($inputs);
     }
 
     public function delete(int $id): int
     {
-        return DB::table('categories')->delete($id);
+        return Category::destroy($id);
     }
 }

@@ -2,60 +2,44 @@
 
 namespace App\Repositories;
 
+use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use stdClass;
 
 class ProductRepository
 {
     public function getAll(array $columns = ['*']): Collection
     {
-        return DB::table('products')
-            ->select($columns)
-            ->get();
+        return Product::all($columns);
     }
 
     public function getAllPaginated(): LengthAwarePaginator
     {
-        return DB::table('products')->paginate(3);
-    }
-
-    /**
-     * @param int $id
-     * @return stdClass|null
-     */
-    public function findById(int $id): ?stdClass
-    {
-        return DB::table('products')
-            ->where('id', '=', $id)
-            ->get()
-            ->first();
+        return Product::paginate(3);
     }
 
     /**
      * @param string $name
-     * @return stdClass|null
+     * @return Product|null
      */
-    public function findByName(string $name): ?stdClass
+    public function findByName(string $name): ?Product
     {
-        return DB::table('products')
-            ->where('name', '=', $name)
+        return Product::where('name', '=', $name)
             ->get()
             ->first();
     }
 
     /**
      * @param array $inputs
-     * @return int|null
+     * @return Product|null
      */
-    public function create(array $inputs): ?int
+    public function create(array $inputs): ?Product
     {
-        return DB::table('products')->insertGetId($inputs);
+        return Product::create($inputs);
     }
 
     public function delete(int $id): int
     {
-        return DB::table('products')->delete($id);
+        return Product::destroy($id);
     }
 }

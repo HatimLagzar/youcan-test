@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\DatabaseManipulationException;
 use App\Exceptions\ValidationException;
+use App\Models\Product;
 use App\Repositories\ProductRepository;
 use App\Validators\ProductValidator;
 use Carbon\Carbon;
@@ -12,7 +13,6 @@ use Illuminate\Http\File;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
-use stdClass;
 
 class ProductService
 {
@@ -52,7 +52,7 @@ class ProductService
         return $this->productRepository->getAllPaginated();
     }
 
-    public function findByName(string $name): ?stdClass
+    public function findByName(string $name): ?Product
     {
         return $this->productRepository->findByName($name);
     }
@@ -72,13 +72,13 @@ class ProductService
      * @throws DatabaseManipulationException
      * @throws ValidationException
      */
-    public function create(array $inputs): stdClass
+    public function create(array $inputs): Product
     {
         $this->productValidator->validate($inputs);
         $inputs = $this->sanitizeInputs($inputs);
         $imageSrc = $this->uploadThumbnail($inputs['image']);
 
-        $productId = $this->productRepository->create([
+        $product = $this->productRepository->create([
             'name' => $inputs['name'],
             'description' => $inputs['description'],
             'price' => $inputs['price'],
@@ -86,13 +86,13 @@ class ProductService
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
-        if (!$productId) {
+        if (!$product) {
             throw new DatabaseManipulationException('Unknown error occurred while saving the product.');
         }
 
-        $this->productCategoryService->createProductCategories($inputs['categories'], $productId);
+        $this->productCategoryService->createProductCategories($inputs['categories'], $product->id);
 
-        return $this->findById($productId);
+        return $product;
     }
 
     /**
@@ -121,10 +121,5 @@ class ProductService
     public function delete(int $id): bool
     {
         return $this->productRepository->delete($id) > 0;
-    }
-
-    private function findById(int $productId): ?stdClass
-    {
-        return $this->productRepository->findById($productId);
     }
 }
