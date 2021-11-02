@@ -5,7 +5,6 @@ namespace Tests\Feature\Console;
 use App\Models\Category;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Arr;
 use Tests\TestCase;
 
 class CreateProductTest extends TestCase
@@ -19,7 +18,7 @@ class CreateProductTest extends TestCase
     public function test_create_product_console()
     {
         $productCategoriesChoices = Category::all('name')->toArray();
-        $productCategoriesChoices = ['None', ...Arr::flatten($productCategoriesChoices)];
+        $productCategoriesChoices = ['None', ...$productCategoriesChoices];
 
         $this->artisan('product:create')
             ->expectsQuestion('Enter product name', 'T-Shirt')
