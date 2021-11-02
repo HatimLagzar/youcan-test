@@ -22,6 +22,7 @@ class ProductInputHelper
         $inputs['price'] = floatval($inputs['price']);
         $inputs['imageSrc'] = $this->inputService->ask($command, 'Enter product image, URL or local path');
         $inputs['categories'] = $this->askForProductCategories($command, $productCategoriesChoices);
+
         return $inputs;
     }
 

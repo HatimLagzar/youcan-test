@@ -78,16 +78,18 @@ class CreateProduct extends Command
             $inputs['image'] = $this->uploadService->uploadExternalResource($inputs['imageSrc']);
             $this->productService->create($inputs);
             $this->info('Product created successfully.');
+
             return Command::SUCCESS;
         } catch (ValidationException | DatabaseManipulationException $exception) {
             $this->error($exception->getMessage());
+
             return Command::FAILURE;
         } catch (UploadExternalFileException $exception) {
+            $this->error($exception->getMessage());
             if (isset($imageFile) && !empty($imageFile)) {
                 $this->productService->deleteTemporaryFile($imageFile);
             }
 
-            $this->error($exception->getMessage());
             return Command::FAILURE;
         }
     }

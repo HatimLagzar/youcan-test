@@ -47,14 +47,17 @@ class DeleteCategory extends Command
 
         if (!$category) {
             $this->error('Category not found.');
+
             return Command::FAILURE;
         }
 
         if ($this->categoryService->delete($category->id)) {
             $this->info('Category deleted successfully.');
+
             return Command::SUCCESS;
         } else {
             $this->error('Unknown error occured while deleting the category, please retry later.');
+
             return Command::FAILURE;
         }
     }

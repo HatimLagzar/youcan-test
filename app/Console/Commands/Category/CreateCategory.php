@@ -58,6 +58,7 @@ class CreateCategory extends Command
             $parentCategory = $this->categoryService->findByName($parentCategoryName);
             if (!$parentCategory) {
                 $this->error('Parent category not found in the database.');
+
                 return Command::FAILURE;
             }
         }
@@ -65,9 +66,11 @@ class CreateCategory extends Command
         try {
             $this->categoryService->create($name, isset($parentCategory) ? $parentCategory->id : null);
             $this->info('Category created successfully.');
+
             return Command::SUCCESS;
         } catch (DatabaseManipulationException $exception) {
             $this->error($exception->getMessage());
+
             return Command::FAILURE;
         }
     }

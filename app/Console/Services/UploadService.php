@@ -38,6 +38,7 @@ class UploadService
         if (!$isUploaded) {
             throw new UploadExternalFileException('Unknown error occurred while uploading the external file.');
         }
+
         return new File(storage_path() . '/app/' . $pathToFile, $fileName);
     }
 }

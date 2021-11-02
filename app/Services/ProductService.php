@@ -91,6 +91,7 @@ class ProductService
         }
 
         $this->productCategoryService->createProductCategories($inputs['categories'], $productId);
+
         return $this->findById($productId);
     }
 
@@ -103,6 +104,7 @@ class ProductService
         $fileName = $image->hashName();
         Storage::putFileAs('public/products/', $image, $fileName);
         $this->deleteTemporaryFile($image);
+
         return $fileName;
     }
 
