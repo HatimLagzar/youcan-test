@@ -4,7 +4,6 @@ namespace App\Console\Commands\Product;
 
 use App\Services\ProductService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
 
 class DeleteProduct extends Command
 {
@@ -42,7 +41,7 @@ class DeleteProduct extends Command
      */
     public function handle(): int
     {
-        $choices = Arr::flatten($this->productService->getAllNamesAsArray());
+        $choices = $this->productService->getAllNamesAsArray();
         if (count($choices) === 0) {
             $this->info('0 products found.');
             return Command::FAILURE;
